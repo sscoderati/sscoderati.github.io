@@ -6,18 +6,6 @@ tags:
     - http
 author: cheshier
 ---
-
-### 목차
-
-- HTTP란
-    - HTTP 1.0 / 1.1
-    - HTTP 2
-- HTTP Request Protocol
-    - HTTP method : GET
-    - HTTP method : POST
-    - HTTP method : others...
-- HTTP Response Protocol
-
 ## HTTP란
 
 HTTP는 Hyper Text Transfer Protocol로서, 둘 이상의 웹 통신을 하는 개체들이 MIME Type의 데이터를 주고 받을 때 사용하는 Protocol이다.
@@ -70,13 +58,13 @@ pipelining에선 a, b, c의 모든 요청을 한 번에 보낸 뒤에 받은 순
 
 ### HTTP 2
 
-![binary_framing_layer01.svg](/_posts/img/2021-10-31/1_4.svg)
+![binary_framing_layer01.png](/_posts/img/2021-10-31/1_4.png)
 
 HTTP 요청문 structure 변화
 
 (Header / Data) Frame 계층 사용 → 파싱, 전송 속도 증가, 오류 발생 가능성 줄어듬.
 
-![streams_messages_frames01.svg](/_posts/img/2021-10-31/1_5.svg)
+![streams_messages_frames01.png](/_posts/img/2021-10-31/1_5.png)
 
 Server ↔ Client 간 Stream 활성 중에 frame들이 전송됨. (순서 사라짐)
 
