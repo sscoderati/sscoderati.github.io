@@ -39,7 +39,9 @@
 	},
 	"devDependencies": {
 		"@astrojs/mdx": "2.0.5",
-		"@astrojs/sitemap": "3.0.4",
+		"@astrojs/sitemap": "3.0.5",
+		"@astrojs/mdx": "2.0.3",
+		"@astrojs/sitemap": "3.0.5",
 		"@astrojs/tailwind": "5.1.0",
 		"@pagefind/default-ui": "^1.0.4",
 		"@tailwindcss/typography": "0.5.10",
@@ -52,14 +54,14 @@
 		"lint-staged": "^15.2.0",
 		"mdast-util-to-string": "^4.0.0",
 		"motion": "^10.17.0",
-		"pagefind": "^1.0.3",
+		"pagefind": "^1.0.4",
 		"prettier": "^3.2.4",
 		"prettier-config-standard": "^7.0.0",
-		"prettier-plugin-astro": "^0.12.0",
+		"prettier-plugin-astro": "^0.13.0",
 		"reading-time": "^1.5.0",
 		"slugify": "^1.6.6",
 		"tailwind-merge": "2.2.0",
-		"tailwindcss": "3.3.5",
+		"tailwindcss": "3.4.1",
 		"typescript": "^5.2.2"
 	},
 	"lint-staged": {
