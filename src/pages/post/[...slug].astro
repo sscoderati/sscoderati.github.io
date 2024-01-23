@@ -9,7 +9,6 @@ import { getPosts } from '@/utils'
 import SButton from '@/components/mdx/SButton'
 import Disqus from '@/components/Disqus'
 import { disqusConfig } from '@/data/disqus.config'
-import * as console from "console";
 
 const posts = await getCollection('blog')
 export async function getStaticPaths() {
@@ -37,15 +36,13 @@ const relatedPosts = getRelatedPosts(post)
 const { Content, headings, remarkPluginFrontmatter } = await post.render()
 const disqusEnabled = disqusConfig.enabled
 
-const readTimetoKorExpression = remarkPluginFrontmatter.minutesRead < 1 ? '1분 미만' : `읽는 데 ${remarkPluginFrontmatter.minutesRead.replace('min read', '분')}`
+const readTimetoKorExpression =
+	remarkPluginFrontmatter.minutesRead < 1
+		? '1분 미만'
+		: `읽는 데 ${remarkPluginFrontmatter.minutesRead.replace('min read', '분')}`
 ---
 
-<BlogPost
-	id={post.id}
-	data={post.data}
-	headings={headings}
-	readTime={readTimetoKorExpression}
->
+<BlogPost id={post.id} data={post.data} headings={headings} readTime={readTimetoKorExpression}>
 	<div class='grid grid-cols-1 md:grid-cols-[20%_auto] gap-10 mt-8'>
 		<!-- aside  -->
 		<aside class='md:flex flex-col gap-8 hidden'>

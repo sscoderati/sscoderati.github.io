@@ -6,7 +6,7 @@ import MenuIcon from './icons/MenuIcon.astro'
 import Search from '@/components/Search'
 import TagIcon from './icons/TagIcon.astro'
 import ToggleTheme from './ToggleTheme.astro'
-import CoverLetterIcon from "./icons/CoverLetterIcon.astro";
+import CoverLetterIcon from './icons/CoverLetterIcon.astro'
 
 const SOCIALNETWORKS = [
 	{
@@ -37,9 +37,13 @@ const SOCIALNETWORKS = [
 				class='flex flex-col gap-5 md:flex-row md:border-r-2 border-black pr-4 dark:border-white'
 			>
 				<HeaderLink href='/tags' class='flex items-center gap-1 text-2xl md:text-base'>
-					<TagIcon /> 태그
+					<TagIcon />
+					태그
 				</HeaderLink>
-				<HeaderLink href='/resume' class='flex items-center gap-1 text-2xl md:text-base'><CoverLetterIcon />이력서</HeaderLink>
+				<HeaderLink href='/resume' class='flex items-center gap-1 text-2xl md:text-base'>
+					<CoverLetterIcon />
+					이력서
+				</HeaderLink>
 			</div>
 
 			<div class='flex justify-center items-center md:justify-end gap-3 md:p-0'>
