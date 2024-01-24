@@ -11,7 +11,6 @@
 			"@/data/*": ["src/data/*"],
 			"@/site-config": ["src/data/site.config.ts"],
 			"@/styles": ["src/styles/"],
-			"@/content/*": ["src/content/*"],
 			"@/lib/utils/*": ["src/lib/utils/*"]
 		},
 		"jsx": "react-jsx",
