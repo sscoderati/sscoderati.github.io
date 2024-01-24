@@ -1,13 +1,13 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content'
-import BlogPost from '@/layouts/BlogPost'
-import Code from '@/components/mdx/Code'
-import ListRelatedPosts from '@/components/ListRelatedPosts'
-import Share from '@/components/Share'
-import TableOfContents from '@/components/TableOfContents'
+import BlogPost from '@/layouts/BlogPost.astro'
+import Code from '@/components/mdx/Code.astro'
+import ListRelatedPosts from '@/components/ListRelatedPosts.astro'
+import Share from '@/components/Share.astro'
+import TableOfContents from '@/components/TableOfContents.astro'
 import { getPosts } from '@/utils'
-import SButton from '@/components/mdx/SButton'
-import Disqus from '@/components/Disqus'
+import SButton from '@/components/mdx/SButton.astro'
+import Disqus from '@/components/Disqus.astro'
 import { disqusConfig } from '@/data/disqus.config'
 
 const posts = await getCollection('blog')

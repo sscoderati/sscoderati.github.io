@@ -5,14 +5,16 @@
 		"baseUrl": ".",
 		"verbatimModuleSyntax": true,
 		"paths": {
-			"@/components/*": ["src/components/*.astro"],
-			"@/layouts/*": ["src/layouts/*.astro"],
+			"@/components/*": ["./src/components/*"],
+			"@/layouts/*": ["src/layouts/*"],
 			"@/utils": ["src/utils/index.ts"],
 			"@/data/*": ["src/data/*"],
 			"@/site-config": ["src/data/site.config.ts"],
 			"@/styles": ["src/styles/"],
-			"@/content/*": ["src/content/*"]
+			"@/content/*": ["src/content/*"],
+			"@/lib/utils/*": ["src/lib/utils/*"]
 		}
 	},
+	"include": ["src"],
 	"exclude": ["node_modules", "**/node_modules/*", ".vscode", ".idea", "dist"]
 }
