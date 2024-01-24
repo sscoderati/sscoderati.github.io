@@ -2,16 +2,16 @@
 	"extends": "astro/tsconfigs/strict",
 	"compilerOptions": {
 		"strictNullChecks": true,
-		"baseUrl": "/Users/cheshier/Desktop/Dev_Blog/gigae-blog",
+		"baseUrl": "./",
 		"verbatimModuleSyntax": true,
 		"paths": {
-			"@/components/*": ["src/components/*"],
-			"@/layouts/*": ["src/layouts/*"],
-			"@/utils": ["src/utils/index.ts"],
-			"@/data/*": ["src/data/*"],
-			"@/site-config": ["src/data/site.config.ts"],
-			"@/styles": ["src/styles/"],
-			"@/lib/utils/*": ["src/lib/utils/*"]
+			"@/components/*": ["./src/components/*"],
+			"@/layouts/*": ["./src/layouts/*"],
+			"@/utils": ["./src/utils/index.ts"],
+			"@/data/*": ["./src/data/*"],
+			"@/site-config": ["./src/data/site.config.ts"],
+			"@/styles": ["./src/styles/"],
+			"@/lib/utils/*": ["./src/lib/utils/*"]
 		},
 		"jsx": "react-jsx",
 		"jsxImportSource": "react"
