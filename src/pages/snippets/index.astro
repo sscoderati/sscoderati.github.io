@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import TitlePage from '../../components/TitlePage.astro'
+import { Content as Snippets } from '../../content/snippets/snippets.mdx'
+---
+
+<BaseLayout title='스니펫'>
+	<TitlePage title='스니펫' />
+	<article class='max-w-full w-full'>
+		<div class='prose prose-lg md:prose-xl dark:prose-invert mb-12 min-w-full'>
+			<Snippets />
+		</div>
+	</article>
+</BaseLayout>
