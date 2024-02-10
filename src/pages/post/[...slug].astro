@@ -7,6 +7,7 @@ import Share from '@/components/Share.astro'
 import TableOfContents from '@/components/TableOfContents.astro'
 import { getPosts } from '@/utils'
 import SButton from '@/components/mdx/SButton.astro'
+import Giscus from '@/components/Giscus.astro'
 
 const posts = await getCollection('blog')
 export async function getStaticPaths() {
@@ -54,6 +55,8 @@ const readTimetoKorExpression =
 			<div class='prose prose-lg md:prose-xl dark:prose-invert mb-12 min-w-full'>
 				<Content components={{ pre: Code, SButton }} />
 			</div>
+
+			<Giscus />
 
 			<!-- related posts -->
 			<footer>
