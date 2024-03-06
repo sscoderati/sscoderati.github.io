@@ -28,7 +28,7 @@
 		"postbuild": "pagefind --site dist",
 		"format:check": "prettier --plugin-search-dir=. --check .",
 		"format": "prettier --plugin-search-dir=. --write .",
-		"lint": "eslint .",
+		"lint": "eslint ."
 	},
 	"dependencies": {
 		"@astrojs/react": "^3.0.9",
