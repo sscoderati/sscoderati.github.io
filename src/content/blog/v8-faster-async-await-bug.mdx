@@ -18,12 +18,14 @@ V8 (JS 엔진)에서 Promise와 async 함수의 실행을 어떻게 최적화할
 한창 이 주제에 대해 딥다이브(데브코스에서 진행했던 자발적 발표 활동)를 준비하던 와중이어서 재미있게 읽어내려가던 와중에 어느 한 섹션에서 멈칫하게 되었다.
 
 ```js
-const p = Promise.resolve()(async () => {
+const p = Promise.resolve()
+
+;(async () => {
 	await p
-	console.log('after: await')
+	console.log('after:await')
 })()
 
-p.then(() => console.log('tick: a')).then(() => console.log('tick: b'))
+p.then(() => console.log('tick:a')).then(() => console.log('tick:b'))
 ```
 
 이 코드 예제의 결과를 예상해보라고 해서 예상해봤다. 아래와 같이 나올것이라 예상했다.
@@ -81,7 +83,7 @@ const p = Promise.resolve()
 그리고 async function의 실행이 중단되었으니, 그 아래 코드가 실행되었을 것이다.
 
 ```js
-p.then(() => console.log('tick: a')).then(() => console.log('tick: b'))
+p.then(() => console.log('tick:a')).then(() => console.log('tick:b'))
 ```
 
 p는 resolve된 Promise이니까, then()이 호출되었을 것이고, 내부의 콜백은 마이크로 태스크 큐로 푸시되었을 것이다.
