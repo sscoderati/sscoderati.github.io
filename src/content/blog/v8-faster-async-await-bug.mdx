@@ -18,9 +18,7 @@ V8 (JS 엔진)에서 Promise와 async 함수의 실행을 어떻게 최적화할
 한창 이 주제에 대해 딥다이브(데브코스에서 진행했던 자발적 발표 활동)를 준비하던 와중이어서 재미있게 읽어내려가던 와중에 어느 한 섹션에서 멈칫하게 되었다.
 
 ```js
-const p = Promise.resolve()
-
-;(async () => {
+const p = Promise.resolve()(async () => {
 	await p
 	console.log('after: await')
 })()
