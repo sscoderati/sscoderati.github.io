@@ -14,6 +14,12 @@ const eslintConfig = [
     'plugin:prettier/recommended',
     'plugin:mdx/recommended',
   ),
+  {
+    files: ['**/*.mdx'],
+    rules: {
+      'prettier/prettier': 'off',
+    },
+  },
 ]
 
 export default eslintConfig
