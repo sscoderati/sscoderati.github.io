@@ -1,22 +1,10 @@
 'use client'
 import { AnimatedBackground } from '@/components/ui/animated-background'
 import { Magnetic } from '@/components/ui/magnetic'
-import {
-  MorphingDialog,
-  MorphingDialogClose,
-  MorphingDialogContainer,
-  MorphingDialogContent,
-  MorphingDialogTrigger,
-} from '@/components/ui/morphing-dialog'
 import { Spotlight } from '@/components/ui/spotlight'
-import { XIcon } from 'lucide-react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
-import {
-  BLOG_POSTS,
-  EMAIL, SOCIAL_LINKS,
-  WORK_EXPERIENCE
-} from './data'
+import { BLOG_POSTS, EMAIL, SOCIAL_LINKS, WORK_EXPERIENCE } from './data'
 
 const VARIANTS_CONTAINER = {
   hidden: { opacity: 0 },
@@ -36,11 +24,6 @@ const VARIANTS_SECTION = {
 const TRANSITION_SECTION = {
   duration: 0.3,
 }
-
-type ProjectVideoProps = {
-  src: string
-}
-
 
 function MagneticSocialLink({
   children,
@@ -90,14 +73,15 @@ export default function Personal() {
       >
         <div className="flex-1">
           <p className="text-zinc-600 dark:text-zinc-400">
-          팀에서 제품이 성장하기 위해 시도하는 아이디어의 의도가 최대한 투명하게 제품에 반영될 수 있도록 개발합니다.
-          
-          직군 간 입장의 차이를 인지하고 부드럽게 논의하며, 더 나은 해결책을 위한 책임감있는 반박을 지향합니다.
+            팀에서 제품이 성장하기 위해 시도하는 아이디어의 의도가 최대한
+            투명하게 제품에 반영될 수 있도록 개발합니다. 직군 간 입장의 차이를
+            인지하고 부드럽게 논의하며, 더 나은 해결책을 위한 책임감있는 반박을
+            지향합니다.
           </p>
         </div>
       </motion.section>
 
-{/* 프로젝트 섹션: 추후 추가 예정 */}
+      {/* 프로젝트 섹션: 추후 추가 예정 */}
       {/* <motion.section
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
@@ -131,7 +115,9 @@ export default function Personal() {
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
       >
-        <h3 className="mb-5 text-lg font-medium">Work Experience</h3>
+        <h3 className="mb-5 text-lg font-medium dark:text-zinc-100">
+          Work Experience
+        </h3>
         <div className="flex flex-col space-y-2">
           {WORK_EXPERIENCE.map((job) => (
             <a
@@ -169,7 +155,7 @@ export default function Personal() {
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
       >
-        <h3 className="mb-3 text-lg font-medium">Blog</h3>
+        <h3 className="mb-3 text-lg font-medium dark:text-zinc-100">Blog</h3>
         <div className="flex flex-col space-y-0">
           <AnimatedBackground
             enableHover
@@ -180,7 +166,9 @@ export default function Personal() {
               duration: 0.2,
             }}
           >
-            {BLOG_POSTS.map((post) => (
+            {BLOG_POSTS.sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+            ).map((post) => (
               <Link
                 key={post.uid}
                 className="-mx-3 rounded-xl px-3 py-3"
@@ -191,8 +179,9 @@ export default function Personal() {
                   <h4 className="font-normal dark:text-zinc-100">
                     {post.title}
                   </h4>
-                  <p className="text-zinc-500 dark:text-zinc-400">
-                    {post.description}
+                  <p className="flex flex-col gap-1 text-zinc-500 dark:text-zinc-400">
+                    <span className="text-sm">{post.description}</span>
+                    <span className="text-xs">{post.date}</span>
                   </p>
                 </div>
               </Link>
@@ -207,7 +196,6 @@ export default function Personal() {
       >
         <h3 className="mb-5 text-lg font-medium">Connect</h3>
         <p className="mb-5 text-zinc-600 dark:text-zinc-400">
-          Feel free to contact me at{' '}
           <a className="underline dark:text-zinc-300" href={`mailto:${EMAIL}`}>
             {EMAIL}
           </a>

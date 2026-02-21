@@ -59,7 +59,7 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
     title: 'Frontend Developer',
     start: '2024.05',
     end: '2025.06',
-    link: 'https://data-bank.ai',
+    link: 'https://www.data-bank.ai',
     id: 'work1',
   },
 ]
@@ -101,7 +101,7 @@ export const BLOG_POSTS: BlogPost[] = [
 
 export const SOCIAL_LINKS: SocialLink[] = [
   { label: 'Github', link: 'https://github.com/sscoderati' },
-  { label: 'Twitter', link: 'https://twitter.com/sscoderati' },
+  { label: 'X', link: 'https://x.com/sscoderati' },
   { label: 'LinkedIn', link: 'https://www.linkedin.com/in/sscoderati' },
 ]
 

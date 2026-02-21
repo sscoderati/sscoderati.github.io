@@ -7,7 +7,7 @@ export function Header() {
     <header className="mb-8 flex items-center justify-between">
       <div>
         <Link href="/" className="font-medium text-black dark:text-white">
-          Changgi Hong
+          개발자 홍창기
         </Link>
         <TextEffect
           as="p"
