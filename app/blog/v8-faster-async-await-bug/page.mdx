@@ -1,0 +1,126 @@
+export const metadata = {
+  title: 'V8 블로그 글에서 찾은 에러(진)',
+  description:
+    '작년 하반기에 우연히 찾은 공신력 높은 글의 에러(진)에 대해 작성해보았습니다.',
+  alternates: {
+    canonical: '/blog/v8-faster-async-await-bug',
+  },
+}
+
+## 서론
+
+나는 작년 하반기에 데브코스라는 부트캠프를 하나 수료했다. 한창 JavaScript에 대해 심도있게 파고드는 공부를 하던 시기가 있었는데, 내가 JS에서 가장 높은 관심을 갖던 비동기, Promise, 그리고 async / await 문법에 대해 구글에서 많은 자료를 찾아보던 와중에 어떤 글을 하나 찾게 되었다.
+
+[Faster async functions and promises](https://v8.dev/blog/fast-async)
+
+V8 (JS 엔진)에서 Promise와 async 함수의 실행을 어떻게 최적화할 수 있었는지 다루는 블로그 글이다. 어려워서 다 읽지는 못했지만 Promise와 async / await 문법의 실행을 호출 스택, 이벤트 루프와 태스크 큐의 관점에서 심도있게 다루는 내용을 다루고 있다.
+
+한창 이 주제에 대해 딥다이브(데브코스에서 진행했던 자발적 발표 활동)를 준비하던 와중이어서 재미있게 읽어내려가던 와중에 어느 한 섹션에서 멈칫하게 되었다.
+
+```js
+const p = Promise.resolve();
+
+(async () => {
+  await p; console.log('after:await');
+})();
+
+p.then(() => console.log('tick:a'))
+ .then(() => console.log('tick:b'));
+```
+
+이 코드 예제의 결과를 예상해보라고 해서 예상해봤다. 아래와 같이 나올것이라 예상했다.
+
+```bash
+after: await
+tick: a
+tick: b
+```
+
+그런데 블로그 글은 Node.js 8 버전에서는 이런 결과가 나오는데, 10 버전에서는 아래와 같이 나온다고 말한다.
+
+```bash
+tick: a
+tick: b
+after: await
+```
+
+그리고 10 버전의 결과가 맞다고 한다. 혼란스러울 수 있지만 이게 "Correct Behavior"라고 한다.
+
+뭐지? 충격먹어서 바로 터미널 켜서 위 예제를 실행해봤다. 내가 예상한 결과와 똑같이 나온다. (Node.js 20버전이었다.)
+나는 바로 이건 뭔가 오류가 있을 수도 있겠다는 생각을 했고, 내가 잘못 알고 있는 상황이라고 해도 얻어갈 것이 많다고 생각했다.
+
+그래서 바로 파보았다.
+
+## 본론
+
+일단 블로그 글에서 나온 것 처럼 Node.js 8버전에서는 `after: await`이 먼저 출력됐고, 10버전과 11버전에서는 `tick: a`가 먼저 출력됐다. 그리고 12버전 이후로는 다시 `after: await`이 먼저 출력됐다.
+
+크롬 브라우저 콘솔에도 테스트해봤는데, 역시나 `after: await`이 먼저 출력됐다. 내가 틀리지 않았다는 생각이 들었다.
+
+일단 내가 위 코드의 실행 흐름을 분석한 것은 다음과 같다.
+
+```js
+const p = Promise.resolve()
+```
+
+상수 p에는 resolve된 Promise가 담겼을 것이다.
+
+그리고 바로 아래에 등장하는 즉시실행함수(IIFE, Immediately Invoked Function Expression)가 실행되었을 것이고, IIFE는 익명의 async function을 동작시켰을 것이다.
+
+```js
+(async () => {
+  await p; console.log('after:await');
+})();
+```
+
+여기서 resolve된 Promise인 p는 `await`키워드를 만난다. 이때 어떤 일이 벌어질까?
+
+[MDN에 따르면](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#control_flow_effects_of_await), 일단 p가 resolve된 Promise든 아니든 그 즉시 async function의 실행을 중단하고 나머지 실행하지 못한 작업들을 마이크로 태스트 큐에 푸시한다고 한다.
+
+그러면 `console.log('after: await');`는 마이크로 태스크 큐에 push되었을 것이다.
+
+그리고 async function의 실행이 중단되었으니, 그 아래 코드가 실행되었을 것이다.
+
+```js
+p.then(() => console.log('tick:a'))
+ .then(() => console.log('tick:b'));
+```
+
+p는 resolve된 Promise이니까, then()이 호출되었을 것이고, 내부의 콜백은 마이크로 태스크 큐로 푸시되었을 것이다.
+
+그러면 지금 아래와 같은 순서로 MicroTask가 푸시되어 있을 것이다.
+
+1. `console.log('after: await')`
+2. `() => console.log('tick: a')`
+3. `() => console.log('tick: b')`
+
+아래에 코드가 더 없으므로, 중단되었던 async function의 실행이 재개될 것이다.
+
+그런데 MDN에 따르면, 이 async function 내부에서 push된 MicroTask는 async function의 실행 재개 이전에 실행될 수 있다고 한다. (위 링크에서 queueMicroTask로 검색하면 관련 내용을 찾을 수 있다.)
+
+그러면 `console.log('after: await')`이 실행되고, async function의 실행이 재개되고 끝나서 IIFE의 실행도 끝나면 호출 스택이 비어서 나머지 MicroTask가 실행되는 것이고, 그렇게 이 코드 예제의 실행이 끝나게 되는 것이다.
+
+그래서 내가 생각하는 코드 예제의 실행 결과는 아래가 맞다고 생각한다.
+
+```bash
+after: await
+tick: a
+tick: b
+```
+
+## 결론
+
+일단 왜 제목에 에러(진)이라고 해놨냐면, 원래 이 글의 저자인 @MayaLekova, @bmeurer 두 분 또는 다른 JS 사용자의 검증을 받지 못했기 때문이다.
+
+<img
+  width='616'
+  alt='X.com_faster-async-reply'
+  src='https://github.com/sscoderati/sscoderati.github.io/assets/69716992/3d43783f-4f77-404d-b12f-e6738603b785'
+  style={{ margin: '0 auto' }}
+/>
+
+나는 이 에러를 발견했을 때 진짜로 나름 피드백을 받고 싶어서 무작정 트위터로 달려가 V8 계정에서 이 포스트에 관한 트윗의 답글로 나의 의견을 정리해서 달아두었었다. 하지만 조회수만 오르고 답글은 달리지 않았다... 🥹
+
+그래서 뭐 한동안 잊고 지내다가 다시 이 내용에 대한 글을 써야겠다고 마음먹었을 때, 먼저 v8.dev 레포지토리에 이슈를 생성해서 내 생각을 정리해두고, 현재는 반응을 기다리고 있다. [깃헙 이슈 링크](https://github.com/v8/v8.dev/issues/735)
+
+혹시나 이 글을 읽어주시는 독자 분께서도 혹시 심심하시면 검증을 부탁드리고 싶다. 이런 글에 대한 피드백은 너무 감사하다.
