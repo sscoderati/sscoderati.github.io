@@ -4,7 +4,7 @@ import createMDX from '@next/mdx';
 const nextConfig = {
   reactStrictMode: true,
   output: 'export',
-  trailingSlash: true,
+  trailingSlash: false,
   eslint: {
     ignoreDuringBuilds: true,
   },

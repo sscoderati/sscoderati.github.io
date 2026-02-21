@@ -157,7 +157,15 @@ export default function HomeClient({ blogPosts }: { blogPosts: BlogPost[] }) {
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
       >
-        <h3 className="mb-3 text-lg font-medium dark:text-zinc-100">Blog</h3>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-lg font-medium dark:text-zinc-100">Blog</h3>
+          <Link
+            href="/blog"
+            className="text-sm text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+          >
+            More {'>'}
+          </Link>
+        </div>
         <div className="flex flex-col space-y-0">
           <AnimatedBackground
             enableHover

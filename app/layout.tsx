@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(`${WEBSITE_URL}/`),
   alternates: { canonical: '/' },
-  title: { default: SITE_NAME, template: '%s | Chang Gi Hong' },
+  title: { default: SITE_NAME, template: '%s | Changgi Hong' },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   authors: [{ name: SITE_AUTHOR }],

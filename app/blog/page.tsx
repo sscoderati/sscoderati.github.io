@@ -1,3 +1,4 @@
+import { AnimatedBackground } from '@/components/ui/animated-background'
 import { getBlogPosts } from '@/lib/blog-posts'
 import Link from 'next/link'
 
@@ -19,22 +20,34 @@ export default async function BlogIndexPage() {
         작성한 글 목록입니다.
       </p>
       <div className="mt-8 flex flex-col gap-1">
-        {sortedPosts.map((post) => (
-          <article
-            key={post.link}
-            className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800"
-          >
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              {post.date}
-            </span>
-            <Link href={post.link} className="hover:underline">
-              <h2 className="text-base font-medium">{post.title}</h2>
+        <AnimatedBackground
+          enableHover
+          className="h-full w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80"
+          transition={{
+            type: 'spring',
+            bounce: 0,
+            duration: 0.2,
+          }}
+        >
+          {sortedPosts.map((post) => (
+            <Link
+              key={post.link}
+              className="-mx-3 rounded-xl px-3 py-3 no-underline hover:no-underline"
+              href={post.link}
+              data-id={post.link}
+            >
+              <div className="flex flex-col space-y-1">
+                <h4 className="m-0! font-normal dark:text-zinc-100">
+                  {post.title}
+                </h4>
+                <p className="mb-0! flex flex-col gap-1 text-zinc-500 dark:text-zinc-400">
+                  <span className="text-sm">{post.description}</span>
+                  <span className="text-xs">{post.date}</span>
+                </p>
+              </div>
             </Link>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              {post.description}
-            </p>
-          </article>
-        ))}
+          ))}
+        </AnimatedBackground>
       </div>
     </main>
   )

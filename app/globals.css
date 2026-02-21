@@ -21,12 +21,27 @@
 }
 
 :root {
+  /* sugar-high tokens: tuned light mapping */
+  --sh-class: #df8e1d;
+  --sh-identifier: #4c4f69;
+  --sh-sign: #7c7f93;
+  --sh-property: #1e66f5;
+  --sh-entity: #179299;
+  --sh-jsxliterals: #fe640b;
+  --sh-string: #40a02b;
+  --sh-keyword: #8839ef;
+  --sh-comment: #9ca0b0;
+}
+
+.dark {
+  /* sugar-high tokens: Tokyo Night */
   --sh-class: #7aa2f7;
+  --sh-identifier: #c0caf5;
   --sh-sign: #89ddff;
+  --sh-property: #73daca;
+  --sh-entity: #2ac3de;
+  --sh-jsxliterals: #bb9af7;
   --sh-string: #9ece6a;
   --sh-keyword: #bb9af7;
   --sh-comment: #565f89;
-  --sh-jsxliterals: #7aa2f7;
-  --sh-property: #73daca;
-  --sh-entity: #e0af68;
 }
