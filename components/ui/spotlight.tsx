@@ -45,25 +45,33 @@ export function Spotlight({
     [mouseX, mouseY, parentElement],
   )
 
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true)
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false)
+  }, [])
+
   useEffect(() => {
     if (!parentElement) return
 
     parentElement.addEventListener('mousemove', handleMouseMove)
-    parentElement.addEventListener('mouseenter', () => setIsHovered(true))
-    parentElement.addEventListener('mouseleave', () => setIsHovered(false))
+    parentElement.addEventListener('mouseenter', handleMouseEnter)
+    parentElement.addEventListener('mouseleave', handleMouseLeave)
 
     return () => {
       parentElement.removeEventListener('mousemove', handleMouseMove)
-      parentElement.removeEventListener('mouseenter', () => setIsHovered(true))
-      parentElement.removeEventListener('mouseleave', () => setIsHovered(false))
+      parentElement.removeEventListener('mouseenter', handleMouseEnter)
+      parentElement.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [parentElement, handleMouseMove])
+  }, [parentElement, handleMouseMove, handleMouseEnter, handleMouseLeave])
 
   return (
     <motion.div
       ref={containerRef}
       className={cn(
-        'pointer-events-none absolute rounded-full bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops),transparent_80%)] blur-xl transition-opacity duration-200',
+        'pointer-events-none absolute rounded-full bg-blue-500/45 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops),transparent_75%)] blur-xl transition-opacity duration-150 dark:bg-blue-200/40',
         'from-zinc-50 via-zinc-100 to-zinc-200',
         isHovered ? 'opacity-100' : 'opacity-0',
         className,

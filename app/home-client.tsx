@@ -122,18 +122,20 @@ export default function HomeClient({ blogPosts }: { blogPosts: BlogPost[] }) {
         </h3>
         <div className="flex flex-col space-y-2">
           {WORK_EXPERIENCE.map((job) => (
-            <a
-              className="relative overflow-hidden rounded-2xl bg-zinc-300/30 p-[1px] dark:bg-zinc-600/30"
-              href={job.link}
-              target="_blank"
-              rel="noopener noreferrer"
+            <div
+              className="relative overflow-hidden rounded-2xl bg-zinc-300/40 p-[1px] dark:bg-zinc-700/40"
               key={job.link}
             >
               <Spotlight
-                className="from-zinc-900 via-zinc-800 to-zinc-700 blur-2xl dark:from-zinc-100 dark:via-zinc-200 dark:to-zinc-50"
-                size={64}
+                className="from-blue-600 via-blue-500 to-blue-400 blur-3xl dark:from-blue-200 dark:via-blue-300 dark:to-blue-400"
+                size={180}
               />
-              <div className="relative h-full w-full rounded-[15px] bg-white p-4 dark:bg-zinc-950">
+              <a
+                className="relative block h-full w-full rounded-[14px] bg-white p-4 dark:bg-zinc-950"
+                href={job.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <div className="relative flex w-full flex-row justify-between">
                   <div>
                     <h4 className="font-normal dark:text-zinc-100">
@@ -147,8 +149,8 @@ export default function HomeClient({ blogPosts }: { blogPosts: BlogPost[] }) {
                     {job.start} - {job.end}
                   </p>
                 </div>
-              </div>
-            </a>
+              </a>
+            </div>
           ))}
         </div>
       </motion.section>
