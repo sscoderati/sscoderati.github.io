@@ -42,7 +42,7 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
     title: 'Fullstack Developer',
     start: '2025.07',
     end: 'Present',
-    link: 'https://betabrain.co.kr',
+    link: 'https://www.betabrain.co.kr',
     companyDescription: '베타브레인은 B2B 컨설팅 및 솔루션 제공 기업입니다.',
     responsibilities: [
       '풀스택 웹 애플리케이션 설계 및 개발, 배포 후 유지보수',
