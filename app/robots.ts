@@ -1,4 +1,4 @@
-import { WEBSITE_URL } from '@/lib/common'
+import { WEBSITE_URL } from '@/constants/common'
 import type { MetadataRoute } from 'next'
 
 export const dynamic = 'force-static'

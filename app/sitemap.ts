@@ -1,5 +1,5 @@
+import { WEBSITE_URL } from '@/constants/common'
 import { getBlogPosts } from '@/lib/blog-posts'
-import { WEBSITE_URL } from '@/lib/common'
 import { getLogPosts } from '@/lib/log-posts'
 import type { MetadataRoute } from 'next'
 
