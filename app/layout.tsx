@@ -3,7 +3,7 @@ import {
   SITE_DESCRIPTION,
   SITE_NAME,
   WEBSITE_URL,
-} from '@/lib/constants'
+} from '@/constants/common'
 import type { Metadata, Viewport } from 'next'
 import { ThemeProvider } from 'next-themes'
 import localFont from 'next/font/local'

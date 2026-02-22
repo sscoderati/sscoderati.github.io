@@ -1,5 +1,5 @@
+import { WEBSITE_URL } from '@/lib/common'
 import type { MetadataRoute } from 'next'
-import { WEBSITE_URL } from '@/lib/constants'
 
 export const dynamic = 'force-static'
 
