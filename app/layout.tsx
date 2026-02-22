@@ -6,7 +6,7 @@ import {
 } from '@/lib/constants'
 import type { Metadata, Viewport } from 'next'
 import { ThemeProvider } from 'next-themes'
-import { Geist, Geist_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import { Footer } from './footer'
 import './globals.css'
 import { Header } from './header'
@@ -45,11 +45,18 @@ export const metadata: Metadata = {
   },
 }
 
-const geist = Geist({ variable: '--font-geist', subsets: ['latin'] })
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+const pretendard = localFont({
+  src: [
+    { path: '../public/fonts/Pretendard-ExtraLight.woff2', weight: '200' },
+    { path: '../public/fonts/Pretendard-Light.woff2', weight: '300' },
+    { path: '../public/fonts/Pretendard-Regular.woff2', weight: '400' },
+    { path: '../public/fonts/Pretendard-Medium.woff2', weight: '500' },
+    { path: '../public/fonts/Pretendard-SemiBold.woff2', weight: '600' },
+    { path: '../public/fonts/Pretendard-Bold.woff2', weight: '700' },
+    { path: '../public/fonts/Pretendard-ExtraBold.woff2', weight: '800' },
+  ],
+  variable: '--font-pretendard',
+  display: 'swap',
 })
 
 export default function RootLayout({
@@ -58,7 +65,7 @@ export default function RootLayout({
   return (
     <html lang="ko-KR" suppressHydrationWarning>
       <body
-        className={`${geist.variable} ${geistMono.variable} bg-white tracking-tight antialiased dark:bg-zinc-950`}
+        className={`${pretendard.variable} bg-white tracking-tight antialiased dark:bg-zinc-950`}
       >
         <ThemeProvider
           enableSystem={true}
@@ -67,7 +74,7 @@ export default function RootLayout({
           storageKey="theme"
           defaultTheme="system"
         >
-          <div className="flex min-h-screen w-full flex-col font-[family-name:var(--font-inter-tight)]">
+          <div className="flex min-h-screen w-full flex-col font-(family-name:--font-pretendard)">
             <div className="relative mx-auto w-full max-w-screen-sm flex-1 px-4 pt-20">
               <Header />
               {children}
