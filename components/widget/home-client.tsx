@@ -6,7 +6,7 @@ import { Spotlight } from '@/components/ui/spotlight'
 import type { BlogPost } from '@/lib/blog-posts'
 import { motion } from 'motion/react'
 import Link from 'next/link'
-import { EMAIL, SOCIAL_LINKS, WORK_EXPERIENCE } from './data'
+import { EMAIL, SOCIAL_LINKS, WORK_EXPERIENCE } from '../../constants/data'
 
 const VARIANTS_CONTAINER = {
   hidden: { opacity: 0 },

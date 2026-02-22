@@ -7,9 +7,9 @@ import {
 import type { Metadata, Viewport } from 'next'
 import { ThemeProvider } from 'next-themes'
 import localFont from 'next/font/local'
-import { Footer } from './footer'
+import { Footer } from '../components/layout/footer'
+import { Header } from '../components/layout/header'
 import './globals.css'
-import { Header } from './header'
 
 export const viewport: Viewport = {
   width: 'device-width',
