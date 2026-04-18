@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/morphing-dialog'
 import { Spotlight } from '@/components/ui/spotlight'
 import type { BlogListItem } from '@/lib/blog'
-import type { LogCategory } from '@/lib/log-posts'
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { EMAIL, SOCIAL_LINKS, WORK_EXPERIENCE } from '../../constants/data'
@@ -74,10 +73,8 @@ function MagneticSocialLink({
 
 export default function HomeClient({
   blogPosts,
-  logCategories,
 }: {
   blogPosts: BlogListItem[]
-  logCategories: LogCategory[]
 }) {
   return (
     <motion.main
@@ -301,59 +298,6 @@ export default function HomeClient({
               </Link>
             ))}
           </AnimatedBackground>
-        </div>
-      </motion.section>
-
-      <motion.section
-        variants={VARIANTS_SECTION}
-        transition={TRANSITION_SECTION}
-      >
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-lg font-medium dark:text-zinc-100">Logs</h3>
-          <Link
-            href="/logs"
-            className="text-sm text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-          >
-            More {'>'}
-          </Link>
-        </div>
-        <div className="flex flex-col gap-6">
-          {logCategories.map((category) => (
-            <div key={category.key}>
-              <h4 className="mb-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                {category.label}
-              </h4>
-              <div className="flex flex-col space-y-0">
-                <AnimatedBackground
-                  enableHover
-                  className="h-full w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80"
-                  transition={{
-                    type: 'spring',
-                    bounce: 0,
-                    duration: 0.2,
-                  }}
-                >
-                  {category.series.map((series) => (
-                    <Link
-                      key={series.slug}
-                      className="-mx-3 rounded-xl px-3 py-2.5"
-                      href={series.link}
-                      data-id={series.slug}
-                    >
-                      <div className="flex items-center gap-1">
-                        <h5 className="font-normal dark:text-zinc-100">
-                          {series.label}
-                        </h5>
-                        <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                          {series.postCount}편
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </AnimatedBackground>
-              </div>
-            </div>
-          ))}
         </div>
       </motion.section>
 
