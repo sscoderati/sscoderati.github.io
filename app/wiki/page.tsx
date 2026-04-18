@@ -33,7 +33,7 @@ export default function WikiIndexPage() {
           href="/wiki/graph"
           className="shrink-0 rounded-full border border-zinc-300 px-3 py-1.5 text-xs text-zinc-600 transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500"
         >
-          Graph 보기 (준비 중)
+          Graph 보기
         </Link>
       </div>
       <WikiList posts={posts} tags={tags} />
