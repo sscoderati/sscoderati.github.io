@@ -14,17 +14,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${WEBSITE_URL}/blog/`,
+      url: `${WEBSITE_URL}/blog`,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
-      url: `${WEBSITE_URL}/books/`,
+      url: `${WEBSITE_URL}/books`,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
-      url: `${WEBSITE_URL}/wiki/`,
+      url: `${WEBSITE_URL}/wiki`,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
