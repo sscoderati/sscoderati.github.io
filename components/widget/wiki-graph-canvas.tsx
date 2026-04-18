@@ -186,6 +186,11 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         continue
       }
 
+      if (node.tags.length === 0) {
+        visibleIds.add(node.id)
+        continue
+      }
+
       if (node.tags.some((tag) => enabledTagSet.has(tag))) {
         visibleIds.add(node.id)
       }
@@ -244,7 +249,9 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
       }
 
       const matchingTag = node.tags.find((tag) => enabledTagSet.has(tag)) ?? node.tags[0]
-      return matchingTag ? (tagColorMap.get(matchingTag) ?? (isDark ? '#60a5fa' : '#2563eb')) : '#2563eb'
+      const fallbackColor = isDark ? '#60a5fa' : '#2563eb'
+
+      return matchingTag ? (tagColorMap.get(matchingTag) ?? fallbackColor) : fallbackColor
     },
     [enabledTagSet, isDark, tagColorMap],
   )

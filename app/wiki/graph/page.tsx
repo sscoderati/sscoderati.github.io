@@ -14,6 +14,7 @@ export default function WikiGraphPage() {
 
   return (
     <main className="mt-2 pb-0">
+      <h1 className="sr-only">Wiki Graph</h1>
       <WikiGraphCanvas graph={graph} />
     </main>
   )

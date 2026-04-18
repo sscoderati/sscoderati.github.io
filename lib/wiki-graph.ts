@@ -19,14 +19,18 @@ export type WikiGraph = {
   links: WikiGraphLink[]
 }
 
+const getCanonicalSlug = (slug: string) => normalizeWikiSlug(slug) || slug
+
 export const getGraph = (): WikiGraph => {
   const posts = getWikiPosts()
   const nodes = new Map<string, WikiGraphNode>()
   const links = new Map<string, WikiGraphLink>()
 
   for (const post of posts) {
-    nodes.set(post.slugAsParams, {
-      id: post.slugAsParams,
+    const canonicalSlug = getCanonicalSlug(post.slugAsParams)
+
+    nodes.set(canonicalSlug, {
+      id: canonicalSlug,
       label: post.title,
       slug: post.slugAsParams,
       tags: post.tags,
@@ -35,6 +39,8 @@ export const getGraph = (): WikiGraph => {
   }
 
   for (const post of posts) {
+    const sourceSlug = getCanonicalSlug(post.slugAsParams)
+
     for (const targetSlug of post.wikilinks) {
       const normalizedTargetSlug = normalizeWikiSlug(targetSlug)
       if (!normalizedTargetSlug) {
@@ -51,9 +57,9 @@ export const getGraph = (): WikiGraph => {
         })
       }
 
-      const key = `${post.slugAsParams}->${normalizedTargetSlug}`
+      const key = `${sourceSlug}->${normalizedTargetSlug}`
       links.set(key, {
-        source: post.slugAsParams,
+        source: sourceSlug,
         target: normalizedTargetSlug,
       })
     }
@@ -69,5 +75,9 @@ export const getGraph = (): WikiGraph => {
 
 export const getBacklinks = (slug: string): WikiPost[] => {
   const normalizedSlug = normalizeWikiSlug(slug)
+  if (!normalizedSlug) {
+    return []
+  }
+
   return getWikiPosts().filter((post) => post.wikilinks.includes(normalizedSlug))
 }
