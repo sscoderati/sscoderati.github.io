@@ -4,6 +4,7 @@ import type { WikiGraph, WikiGraphNode } from '@/lib/wiki-graph'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
+import type { ForceGraphMethods } from 'react-force-graph-2d'
 import {
   type FormEvent,
   useCallback,
@@ -13,7 +14,9 @@ import {
   useState,
 } from 'react'
 
-const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), { ssr: false })
+const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), {
+  ssr: false,
+})
 
 const LIGHT_TAG_COLORS = [
   '#0d9488',
@@ -76,20 +79,30 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
   const { resolvedTheme } = useTheme()
 
   const isDark = resolvedTheme === 'dark'
-  const graphRef = useRef<any>(undefined)
+  const graphRef = useRef<ForceGraphMethods | undefined>(undefined)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [canvasWidth, setCanvasWidth] = useState(0)
   const [canvasHeight, setCanvasHeight] = useState(0)
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null)
-  const [highlightedNodeIds, setHighlightedNodeIds] = useState<Set<string>>(new Set())
-  const [highlightedLinkIds, setHighlightedLinkIds] = useState<Set<string>>(new Set())
+  const [highlightedNodeIds, setHighlightedNodeIds] = useState<Set<string>>(
+    new Set(),
+  )
+  const [highlightedLinkIds, setHighlightedLinkIds] = useState<Set<string>>(
+    new Set(),
+  )
   const [searchKeyword, setSearchKeyword] = useState('')
   const [searchMessage, setSearchMessage] = useState('')
   const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null)
 
-  const nodes = useMemo<GraphNode[]>(() => graph.nodes.map((node) => ({ ...node })), [graph.nodes])
-  const links = useMemo<GraphLink[]>(() => graph.links.map((link) => ({ ...link })), [graph.links])
+  const nodes = useMemo<GraphNode[]>(
+    () => graph.nodes.map((node) => ({ ...node })),
+    [graph.nodes],
+  )
+  const links = useMemo<GraphLink[]>(
+    () => graph.links.map((link) => ({ ...link })),
+    [graph.links],
+  )
 
   const tags = useMemo(() => {
     return [...new Set(nodes.flatMap((node) => node.tags))].sort((a, b) =>
@@ -221,7 +234,9 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
   const tagColorMap = useMemo(() => {
     const palette = isDark ? DARK_TAG_COLORS : LIGHT_TAG_COLORS
 
-    return new Map(tags.map((tag, index) => [tag, palette[index % palette.length]]))
+    return new Map(
+      tags.map((tag, index) => [tag, palette[index % palette.length]]),
+    )
   }, [isDark, tags])
 
   const graphData = useMemo(
@@ -232,7 +247,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
     [links, nodes],
   )
 
-  const nodeLabel = useCallback((node: any) => {
+  const nodeLabel = useCallback((node: unknown) => {
     const item = node as GraphNode
     if (item.kind === 'ghost') {
       return `${item.slug} (미작성)`
@@ -248,29 +263,35 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         return isDark ? '#52525b' : '#a1a1aa'
       }
 
-      const matchingTag = node.tags.find((tag) => enabledTagSet.has(tag)) ?? node.tags[0]
+      const matchingTag =
+        node.tags.find((tag) => enabledTagSet.has(tag)) ?? node.tags[0]
       const fallbackColor = isDark ? '#60a5fa' : '#2563eb'
 
-      return matchingTag ? (tagColorMap.get(matchingTag) ?? fallbackColor) : fallbackColor
+      return matchingTag
+        ? (tagColorMap.get(matchingTag) ?? fallbackColor)
+        : fallbackColor
     },
     [enabledTagSet, isDark, tagColorMap],
   )
 
   const handleNodeHover = useCallback(
-    (node: any | null) => {
-      if (!node || !node.id) {
+    (node: unknown | null) => {
+      const hoveredNode = node as { id?: string | number } | null
+      if (!hoveredNode?.id) {
         setHoveredNodeId(null)
         setHighlightedNodeIds(new Set())
         setHighlightedLinkIds(new Set())
         return
       }
 
-      const id = String(node.id)
+      const id = String(hoveredNode.id)
       setHoveredNodeId(id)
 
       const neighborIds = neighborsByNodeId.get(id) ?? new Set<string>()
       const nodeSet = new Set<string>([id, ...neighborIds])
-      const linkSet = new Set<string>(linksByNodeId.get(id) ?? new Set<string>())
+      const linkSet = new Set<string>(
+        linksByNodeId.get(id) ?? new Set<string>(),
+      )
 
       setHighlightedNodeIds(nodeSet)
       setHighlightedLinkIds(linkSet)
@@ -292,7 +313,10 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
           return
         }
 
-        if (typeof targetNode.x === 'number' && typeof targetNode.y === 'number') {
+        if (
+          typeof targetNode.x === 'number' &&
+          typeof targetNode.y === 'number'
+        ) {
           graphApi.centerAt(targetNode.x, targetNode.y, 700)
           graphApi.zoom(3.5, 700)
           return
@@ -324,7 +348,8 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         }
 
         return (
-          node.slug.toLowerCase().includes(keyword) || node.label.toLowerCase().includes(keyword)
+          node.slug.toLowerCase().includes(keyword) ||
+          node.label.toLowerCase().includes(keyword)
         )
       })
 
@@ -345,16 +370,18 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
   )
 
   const nodeVisibility = useCallback(
-    (node: any) => {
-      return visibleNodeIds.has(String(node.id))
+    (node: unknown) => {
+      const graphNode = node as { id?: string | number }
+      return visibleNodeIds.has(String(graphNode.id ?? ''))
     },
     [visibleNodeIds],
   )
 
   const linkVisibility = useCallback(
-    (link: any) => {
-      const sourceId = getNodeId(link.source)
-      const targetId = getNodeId(link.target)
+    (link: unknown) => {
+      const graphLink = link as { source?: unknown; target?: unknown }
+      const sourceId = getNodeId(graphLink.source)
+      const targetId = getNodeId(graphLink.target)
 
       return visibleNodeIds.has(sourceId) && visibleNodeIds.has(targetId)
     },
@@ -362,12 +389,14 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
   )
 
   const nodeCanvasObject = useCallback(
-    (node: any, context: CanvasRenderingContext2D, globalScale: number) => {
+    (node: unknown, context: CanvasRenderingContext2D, globalScale: number) => {
       const item = node as GraphNode
       const nodeId = String(item.id)
 
       const isHighlighted =
-        hoveredNodeId === null || highlightedNodeIds.size === 0 ? true : highlightedNodeIds.has(nodeId)
+        hoveredNodeId === null || highlightedNodeIds.size === 0
+          ? true
+          : highlightedNodeIds.has(nodeId)
       const isFocused = focusedNodeId === nodeId
 
       const radius = item.kind === 'ghost' ? 3.5 : 5.5
@@ -391,7 +420,8 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         context.closePath()
       }
 
-      const showLabel = isFocused || nodeId === hoveredNodeId || globalScale > 2.2
+      const showLabel =
+        isFocused || nodeId === hoveredNodeId || globalScale > 2.2
       if (showLabel) {
         const fontSize = Math.max(11, 14 / globalScale)
         const text = item.kind === 'ghost' ? item.slug : item.label
@@ -403,8 +433,15 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         context.textBaseline = 'middle'
 
         const textWidth = context.measureText(text).width
-        context.fillStyle = isDark ? 'rgba(9, 9, 11, 0.82)' : 'rgba(255, 255, 255, 0.82)'
-        context.fillRect(textX - 2, textY - fontSize * 0.65, textWidth + 4, fontSize * 1.3)
+        context.fillStyle = isDark
+          ? 'rgba(9, 9, 11, 0.82)'
+          : 'rgba(255, 255, 255, 0.82)'
+        context.fillRect(
+          textX - 2,
+          textY - fontSize * 0.65,
+          textWidth + 4,
+          fontSize * 1.3,
+        )
 
         context.fillStyle = isDark ? '#f4f4f5' : '#18181b'
         context.globalAlpha = opacity
@@ -413,16 +450,25 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
 
       context.restore()
     },
-    [focusedNodeId, getNodeFillColor, highlightedNodeIds, hoveredNodeId, isDark],
+    [
+      focusedNodeId,
+      getNodeFillColor,
+      highlightedNodeIds,
+      hoveredNodeId,
+      isDark,
+    ],
   )
 
   const linkColor = useCallback(
-    (link: any) => {
-      const sourceId = getNodeId(link.source)
-      const targetId = getNodeId(link.target)
+    (link: unknown) => {
+      const graphLink = link as { source?: unknown; target?: unknown }
+      const sourceId = getNodeId(graphLink.source)
+      const targetId = getNodeId(graphLink.target)
       const linkId = `${sourceId}->${targetId}`
       const isHighlighted =
-        hoveredNodeId === null || highlightedLinkIds.size === 0 ? true : highlightedLinkIds.has(linkId)
+        hoveredNodeId === null || highlightedLinkIds.size === 0
+          ? true
+          : highlightedLinkIds.has(linkId)
 
       if (!isHighlighted) {
         return isDark ? 'rgba(82, 82, 91, 0.18)' : 'rgba(113, 113, 122, 0.18)'
@@ -434,9 +480,10 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
   )
 
   const linkWidth = useCallback(
-    (link: any) => {
-      const sourceId = getNodeId(link.source)
-      const targetId = getNodeId(link.target)
+    (link: unknown) => {
+      const graphLink = link as { source?: unknown; target?: unknown }
+      const sourceId = getNodeId(graphLink.source)
+      const targetId = getNodeId(graphLink.target)
       const linkId = `${sourceId}->${targetId}`
 
       if (hoveredNodeId === null || highlightedLinkIds.size === 0) {
@@ -454,7 +501,10 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
     <div ref={containerRef} className="relative -mx-4">
       <div
         className="relative w-full border-y border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950"
-        style={{ height: canvasHeight > 0 ? `${canvasHeight}px` : 'calc(100vh - 10rem)' }}
+        style={{
+          height:
+            canvasHeight > 0 ? `${canvasHeight}px` : 'calc(100vh - 10rem)',
+        }}
       >
         <form
           onSubmit={handleSearch}
@@ -478,7 +528,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
 
         <aside className="absolute top-4 left-4 z-10 max-h-[min(70vh,34rem)] w-64 overflow-auto rounded-2xl border border-zinc-300 bg-white/92 p-3 backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/88">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            <h2 className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
               Tag Filter
             </h2>
             <div className="flex items-center gap-1 text-[10px]">
@@ -553,7 +603,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
             cooldownTicks={120}
             d3VelocityDecay={0.22}
             onNodeHover={handleNodeHover}
-            onNodeClick={(node) => {
+            onNodeClick={(node: unknown) => {
               const item = node as GraphNode
               if (item.kind === 'wiki') {
                 router.push(`/wiki/${item.slug}`)

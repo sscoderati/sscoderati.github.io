@@ -66,9 +66,14 @@ export const getGraph = (): WikiGraph => {
   }
 
   return {
-    nodes: [...nodes.values()].sort((a, b) => a.id.localeCompare(b.id, 'ko-KR')),
+    nodes: [...nodes.values()].sort((a, b) =>
+      a.id.localeCompare(b.id, 'ko-KR'),
+    ),
     links: [...links.values()].sort((a, b) =>
-      `${a.source}->${a.target}`.localeCompare(`${b.source}->${b.target}`, 'ko-KR'),
+      `${a.source}->${a.target}`.localeCompare(
+        `${b.source}->${b.target}`,
+        'ko-KR',
+      ),
     ),
   }
 }
@@ -79,5 +84,7 @@ export const getBacklinks = (slug: string): WikiPost[] => {
     return []
   }
 
-  return getWikiPosts().filter((post) => post.wikilinks.includes(normalizedSlug))
+  return getWikiPosts().filter((post) =>
+    post.wikilinks.includes(normalizedSlug),
+  )
 }
