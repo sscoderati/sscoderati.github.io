@@ -1,5 +1,5 @@
 import { AnimatedBackground } from '@/components/ui/animated-background'
-import { getBlogPosts } from '@/lib/blog-posts'
+import { getSortedBlogListItems } from '@/lib/blog'
 import Link from 'next/link'
 
 export const metadata = {
@@ -11,7 +11,7 @@ export const metadata = {
 }
 
 export default async function BlogIndexPage() {
-  const sortedPosts = await getBlogPosts()
+  const sortedPosts = getSortedBlogListItems()
 
   return (
     <main className="mt-24 pb-20">

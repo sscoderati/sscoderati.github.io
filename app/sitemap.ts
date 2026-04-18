@@ -1,5 +1,5 @@
 import { WEBSITE_URL } from '@/constants/common'
-import { getBlogPosts } from '@/lib/blog-posts'
+import { getPublishedBlogPosts, normalizeBlogSlug } from '@/lib/blog'
 import { getLogPosts } from '@/lib/log-posts'
 import type { MetadataRoute } from 'next'
 
@@ -24,10 +24,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  const blogPosts = await getBlogPosts()
+  const blogPosts = getPublishedBlogPosts()
 
   const posts: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${WEBSITE_URL}${post.link}/`,
+    url: `${WEBSITE_URL}/blog/${normalizeBlogSlug(post.slug)}`,
     changeFrequency: 'monthly',
     priority: 0.7,
   }))

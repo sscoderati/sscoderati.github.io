@@ -13,7 +13,7 @@ import {
   MorphingDialogClose,
 } from '@/components/ui/morphing-dialog'
 import { Spotlight } from '@/components/ui/spotlight'
-import type { BlogPost } from '@/lib/blog-posts'
+import type { BlogListItem } from '@/lib/blog'
 import type { LogCategory } from '@/lib/log-posts'
 import { motion } from 'motion/react'
 import Link from 'next/link'
@@ -76,7 +76,7 @@ export default function HomeClient({
   blogPosts,
   logCategories,
 }: {
-  blogPosts: BlogPost[]
+  blogPosts: BlogListItem[]
   logCategories: LogCategory[]
 }) {
   return (
