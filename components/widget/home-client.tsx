@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/morphing-dialog'
 import { Spotlight } from '@/components/ui/spotlight'
 import type { BlogListItem } from '@/lib/blog'
+import { formatWikiDate } from '@/lib/wiki-date'
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { EMAIL, SOCIAL_LINKS, WORK_EXPERIENCE } from '../../constants/data'
@@ -73,8 +74,21 @@ function MagneticSocialLink({
 
 export default function HomeClient({
   blogPosts,
+  recentBooks,
+  recentWikiPosts,
 }: {
   blogPosts: BlogListItem[]
+  recentBooks: {
+    slug: string
+    title: string
+    author: string
+    readDate: string
+  }[]
+  recentWikiPosts: {
+    slug: string
+    title: string
+    updatedAt: string
+  }[]
 }) {
   return (
     <motion.main
@@ -293,6 +307,105 @@ export default function HomeClient({
                   <p className="flex flex-col gap-1 text-zinc-500 dark:text-zinc-400">
                     <span className="text-sm">{post.description}</span>
                     <span className="text-xs">{post.date}</span>
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </AnimatedBackground>
+        </div>
+      </motion.section>
+
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-lg font-medium dark:text-zinc-100">Books</h3>
+          <Link
+            href="/books"
+            className="text-sm text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+          >
+            More {'>'}
+          </Link>
+        </div>
+        <div className="flex flex-col space-y-0">
+          <AnimatedBackground
+            enableHover
+            className="h-full w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80"
+            transition={{
+              type: 'spring',
+              bounce: 0,
+              duration: 0.2,
+            }}
+          >
+            {recentBooks.map((book) => {
+              const link = `/books/${book.slug}`
+              return (
+                <Link
+                  key={book.slug}
+                  className="-mx-3 rounded-xl px-3 py-3"
+                  href={link}
+                  data-id={book.slug}
+                >
+                  <div className="flex flex-col space-y-1">
+                    <h4 className="font-normal dark:text-zinc-100">
+                      {book.title}
+                    </h4>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                      {book.author} · {book.readDate}
+                    </p>
+                  </div>
+                </Link>
+              )
+            })}
+          </AnimatedBackground>
+        </div>
+      </motion.section>
+
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <div className="mb-3 flex items-center justify-between gap-4">
+          <h3 className="text-lg font-medium dark:text-zinc-100">Wiki</h3>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/wiki/graph"
+              className="text-sm text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+            >
+              View graph →
+            </Link>
+            <Link
+              href="/wiki"
+              className="text-sm text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+            >
+              More {'>'}
+            </Link>
+          </div>
+        </div>
+        <div className="flex flex-col space-y-0">
+          <AnimatedBackground
+            enableHover
+            className="h-full w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80"
+            transition={{
+              type: 'spring',
+              bounce: 0,
+              duration: 0.2,
+            }}
+          >
+            {recentWikiPosts.map((post) => (
+              <Link
+                key={post.slug}
+                className="-mx-3 rounded-xl px-3 py-3"
+                href={`/wiki/${post.slug}`}
+                data-id={post.slug}
+              >
+                <div className="flex flex-col space-y-1">
+                  <h4 className="font-normal dark:text-zinc-100">
+                    {post.title}
+                  </h4>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {formatWikiDate(post.updatedAt)}
                   </p>
                 </div>
               </Link>
