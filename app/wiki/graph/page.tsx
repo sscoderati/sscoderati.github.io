@@ -14,7 +14,7 @@ export default function WikiGraphPage() {
   const graph = getGraph()
 
   return (
-    <main className="mt-2 pb-0">
+    <main className="mt-24 pb-20">
       <h1 className="sr-only">Wiki Graph</h1>
       <WikiGraphCanvas graph={graph} />
     </main>

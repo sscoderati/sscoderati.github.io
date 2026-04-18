@@ -10,6 +10,10 @@ import localFont from 'next/font/local'
 import { Footer } from '../components/layout/footer'
 import { Header } from '../components/layout/header'
 import './globals.css'
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -63,7 +67,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko-KR" suppressHydrationWarning>
+    <html lang="ko-KR" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body
         className={`${pretendard.variable} bg-white tracking-tight antialiased dark:bg-zinc-950`}
       >
