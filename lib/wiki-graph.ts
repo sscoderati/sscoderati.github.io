@@ -4,6 +4,8 @@ import { normalizeWikiSlug } from '@/lib/wiki-slug'
 export type WikiGraphNode = {
   id: string
   label: string
+  slug: string
+  tags: string[]
   kind: 'wiki' | 'ghost'
 }
 
@@ -26,6 +28,8 @@ export const getGraph = (): WikiGraph => {
     nodes.set(post.slugAsParams, {
       id: post.slugAsParams,
       label: post.title,
+      slug: post.slugAsParams,
+      tags: post.tags,
       kind: 'wiki',
     })
   }
@@ -41,6 +45,8 @@ export const getGraph = (): WikiGraph => {
         nodes.set(normalizedTargetSlug, {
           id: normalizedTargetSlug,
           label: normalizedTargetSlug,
+          slug: normalizedTargetSlug,
+          tags: [],
           kind: 'ghost',
         })
       }

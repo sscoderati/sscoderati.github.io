@@ -1,18 +1,20 @@
+import { WikiGraphCanvas } from '@/components/widget/wiki-graph-canvas'
+import { getGraph } from '@/lib/wiki-graph'
+
 export const metadata = {
   title: 'Wiki Graph',
-  description: 'Wiki 그래프 뷰 플레이스홀더 페이지',
+  description: 'Wiki 문서 간 연결 구조를 인터랙티브 그래프로 탐색할 수 있습니다.',
   alternates: {
     canonical: '/wiki/graph',
   },
 }
 
-export default function WikiGraphPlaceholderPage() {
+export default function WikiGraphPage() {
+  const graph = getGraph()
+
   return (
-    <main className="mt-24 pb-20">
-      <h1 className="text-xl font-semibold">Wiki Graph</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-        그래프 뷰는 후속 이슈에서 구현 예정입니다.
-      </p>
+    <main className="mt-2 pb-0">
+      <WikiGraphCanvas graph={graph} />
     </main>
   )
 }
