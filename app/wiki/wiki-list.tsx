@@ -49,7 +49,9 @@ export function WikiList({ posts, tags }: WikiListProps) {
             key={tag}
             type="button"
             aria-pressed={selectedTag === tag}
-            onClick={() => setSelectedTag((prevTag) => (prevTag === tag ? null : tag))}
+            onClick={() =>
+              setSelectedTag((prevTag) => (prevTag === tag ? null : tag))
+            }
             className={`rounded-full border px-3 py-1 text-xs transition-colors ${
               selectedTag === tag
                 ? 'border-zinc-900 bg-zinc-900 text-zinc-50 dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900'
@@ -78,7 +80,9 @@ export function WikiList({ posts, tags }: WikiListProps) {
               data-id={post.slug}
             >
               <div className="flex flex-col gap-2">
-                <h4 className="m-0! font-normal dark:text-zinc-100">{post.title}</h4>
+                <h4 className="m-0! font-normal dark:text-zinc-100">
+                  {post.title}
+                </h4>
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
                     <span
@@ -90,8 +94,12 @@ export function WikiList({ posts, tags }: WikiListProps) {
                   ))}
                 </div>
                 <p className="mb-0! flex flex-col gap-1 text-zinc-500 dark:text-zinc-400">
-                  {post.description && <span className="text-sm">{post.description}</span>}
-                  <span className="text-xs">{formatWikiDate(post.updatedAt)}</span>
+                  {post.description && (
+                    <span className="text-sm">{post.description}</span>
+                  )}
+                  <span className="text-xs">
+                    {formatWikiDate(post.updatedAt)}
+                  </span>
                 </p>
               </div>
             </Link>
