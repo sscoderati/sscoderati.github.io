@@ -1,5 +1,9 @@
 import { MDXContent } from '@/components/mdx-content'
-import { blog } from '#site/content'
+import {
+  findPublishedBlogPostBySlug,
+  getPublishedBlogPosts,
+  normalizeBlogSlug,
+} from '@/lib/blog'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -9,25 +13,17 @@ type BlogPostPageProps = {
   }>
 }
 
-function normalizeSlug(slug: string) {
-  return slug.replace(/^blog\//, '')
-}
-
-function getPostBySlug(slug: string) {
-  return blog.find((post) => !post.draft && normalizeSlug(post.slug) === slug)
-}
-
 export function generateStaticParams() {
-  return blog
-    .filter((post) => !post.draft)
-    .map((post) => ({ slug: normalizeSlug(post.slug) }))
+  return getPublishedBlogPosts().map((post) => ({
+    slug: normalizeBlogSlug(post.slug),
+  }))
 }
 
 export async function generateMetadata({
   params,
 }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
-  const post = getPostBySlug(slug)
+  const post = findPublishedBlogPostBySlug(slug)
 
   if (!post) {
     return {}
@@ -44,7 +40,7 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
-  const post = getPostBySlug(slug)
+  const post = findPublishedBlogPostBySlug(slug)
 
   if (!post) {
     notFound()

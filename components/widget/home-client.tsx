@@ -13,17 +13,11 @@ import {
   MorphingDialogClose,
 } from '@/components/ui/morphing-dialog'
 import { Spotlight } from '@/components/ui/spotlight'
+import type { BlogListItem } from '@/lib/blog'
 import type { LogCategory } from '@/lib/log-posts'
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { EMAIL, SOCIAL_LINKS, WORK_EXPERIENCE } from '../../constants/data'
-
-type BlogPost = {
-  title: string
-  description: string
-  date: string
-  link: string
-}
 
 const VARIANTS_CONTAINER = {
   hidden: { opacity: 0 },
@@ -82,7 +76,7 @@ export default function HomeClient({
   blogPosts,
   logCategories,
 }: {
-  blogPosts: BlogPost[]
+  blogPosts: BlogListItem[]
   logCategories: LogCategory[]
 }) {
   return (

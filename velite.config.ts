@@ -15,10 +15,22 @@ const baseContentSchema = s.object({
   body: s.mdx(),
 })
 
+const blogContentSchema = s.object({
+  title: s.string(),
+  description: s.string().optional(),
+  date: s.string(),
+  draft: s.boolean().default(false),
+  tags: s.array(s.string()).default([]),
+  slug: s.path(),
+  excerpt: s.excerpt(),
+  metadata: s.metadata(),
+  body: s.mdx(),
+})
+
 const blog = defineCollection({
   name: 'Blog',
   pattern: 'blog/**/*.{md,mdx}',
-  schema: baseContentSchema,
+  schema: blogContentSchema,
 })
 
 const books = defineCollection({
