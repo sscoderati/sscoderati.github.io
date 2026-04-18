@@ -1,24 +1,23 @@
 import HomeClient from '@/components/widget/home-client'
 import { getSortedBlogListItems } from '@/lib/blog'
-import { books, wiki } from '#site/content'
+import { getBooks } from '@/lib/books'
+import { getWikiPosts } from '@/lib/wiki-posts'
 
 export default function HomePage() {
   const blogPosts = getSortedBlogListItems()
-  const recentBooks = books.slice(0, 3).map((book) => ({
-    slug: book.slug,
-    title: book.title,
-    author: book.author,
-    readDate: book.readDate,
-  }))
+  const recentBooks = getBooks()
+    .slice(0, 3)
+    .map((book) => ({
+      slug: book.slug,
+      title: book.title,
+      author: book.author,
+      readDate: book.readDate,
+    }))
 
-  const recentWikiPosts = [...wiki]
-    .sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    )
+  const recentWikiPosts = getWikiPosts()
     .slice(0, 5)
     .map((post) => ({
-      slug: post.slug.replace(/^wiki\//, ''),
+      slug: post.slugAsParams,
       title: post.title,
       updatedAt: post.updatedAt,
     }))
