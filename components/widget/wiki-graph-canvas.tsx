@@ -638,7 +638,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
     <div ref={containerRef} className="relative -mx-4">
       <div
         className="relative w-full border-y border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950"
-        style={{ height: canvasHeight > 0 ? `${canvasHeight}px` : 'calc(100vh - 10rem)' }}
+        style={{ height: canvasHeight > 0 ? `${canvasHeight}px` : 'min(58dvh, calc(100vh - 12rem))' }}
       >
         <canvas ref={canvasRef} className="block" />
 
@@ -664,7 +664,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         </form>
 
         {/* Tag filter + color legend */}
-        <aside className="absolute top-4 left-4 z-10 max-h-[min(70vh,34rem)] w-64 overflow-auto rounded-2xl border border-zinc-300 bg-white/92 p-3 backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/88">
+        <aside className="absolute right-4 bottom-4 z-10 max-h-[min(50vh,22rem)] w-64 overflow-auto rounded-2xl border border-zinc-300 bg-white/92 p-3 backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/88">
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
               Tag Filter
@@ -719,8 +719,8 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
           </ul>
         </aside>
 
-        {/* Bottom-right controls */}
-        <div className="absolute right-4 bottom-4 z-10 flex flex-col items-end gap-2">
+        {/* Bottom-left controls */}
+        <div className="absolute left-4 bottom-4 z-10 flex flex-col items-start gap-2">
           {searchMessage && (
             <div
               role="status"
