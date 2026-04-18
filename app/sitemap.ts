@@ -1,11 +1,12 @@
 import { WEBSITE_URL } from '@/constants/common'
 import { getPublishedBlogPosts, normalizeBlogSlug } from '@/lib/blog'
-import { getLogPosts } from '@/lib/log-posts'
+import { getBooks } from '@/lib/books'
+import { getWikiPosts } from '@/lib/wiki-posts'
 import type { MetadataRoute } from 'next'
 
 export const dynamic = 'force-static'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default function sitemap(): MetadataRoute.Sitemap {
   const routes: MetadataRoute.Sitemap = [
     {
       url: `${WEBSITE_URL}/`,
@@ -18,7 +19,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${WEBSITE_URL}/logs/`,
+      url: `${WEBSITE_URL}/books/`,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${WEBSITE_URL}/wiki/`,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
@@ -32,13 +38,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  const logPosts = await getLogPosts()
+  const bookEntries: MetadataRoute.Sitemap = getBooks().map((book) => ({
+    url: `${WEBSITE_URL}/books/${book.slug}`,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }))
 
-  const logs: MetadataRoute.Sitemap = logPosts.map((post) => ({
-    url: `${WEBSITE_URL}${post.link}/`,
+  const wikiEntries: MetadataRoute.Sitemap = getWikiPosts().map((post) => ({
+    url: `${WEBSITE_URL}/wiki/${post.slugAsParams}`,
     changeFrequency: 'monthly',
     priority: 0.6,
   }))
 
-  return [...routes, ...posts, ...logs]
+  return [...routes, ...posts, ...bookEntries, ...wikiEntries]
 }
