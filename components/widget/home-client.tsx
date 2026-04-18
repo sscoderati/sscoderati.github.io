@@ -13,11 +13,17 @@ import {
   MorphingDialogClose,
 } from '@/components/ui/morphing-dialog'
 import { Spotlight } from '@/components/ui/spotlight'
-import type { BlogPost } from '@/lib/blog-posts'
 import type { LogCategory } from '@/lib/log-posts'
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { EMAIL, SOCIAL_LINKS, WORK_EXPERIENCE } from '../../constants/data'
+
+type BlogPost = {
+  title: string
+  description: string
+  date: string
+  link: string
+}
 
 const VARIANTS_CONTAINER = {
   hidden: { opacity: 0 },

@@ -6,12 +6,13 @@ const wikiLinkRemarkPlugin = remarkWikiLink as any
 const baseContentSchema = s.object({
   title: s.string(),
   description: s.string().optional(),
+  date: s.string().optional(),
   draft: s.boolean().default(false),
   tags: s.array(s.string()).default([]),
   slug: s.path(),
   excerpt: s.excerpt(),
   metadata: s.metadata(),
-  content: s.mdx(),
+  body: s.mdx(),
 })
 
 const blog = defineCollection({
