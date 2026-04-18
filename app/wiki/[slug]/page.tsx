@@ -1,5 +1,6 @@
 import { MDXContent } from '@/components/mdx-content'
 import { formatWikiDate } from '@/lib/wiki-date'
+import { getBacklinks } from '@/lib/wiki-graph'
 import { getWikiPost, getWikiPosts } from '@/lib/wiki-posts'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -24,7 +25,7 @@ export default async function WikiDetailPage({ params }: WikiDetailPageProps) {
     notFound()
   }
 
-  const backlinks: string[] = []
+  const backlinks = getBacklinks(post.slugAsParams)
 
   return (
     <main className="mt-24 pb-20">
@@ -62,6 +63,25 @@ export default async function WikiDetailPage({ params }: WikiDetailPageProps) {
           <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             연결된 역링크가 아직 없습니다.
           </p>
+        )}
+        {backlinks.length > 0 && (
+          <ul className="mt-3 space-y-2">
+            {backlinks.map((backlink) => (
+              <li key={`${post.slugAsParams}-backlink-${backlink.slugAsParams}`}>
+                <Link
+                  href={`/wiki/${backlink.slugAsParams}`}
+                  className="text-sm text-zinc-700 underline-offset-2 transition-colors hover:text-zinc-900 hover:underline dark:text-zinc-300 dark:hover:text-zinc-100"
+                >
+                  {backlink.title}
+                </Link>
+                {backlink.description && (
+                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                    {backlink.description}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </main>
