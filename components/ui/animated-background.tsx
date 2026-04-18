@@ -59,7 +59,7 @@ export function AnimatedBackground({
 
   return Children.map(
     children,
-    (child: ReactElement<AnimatedBackgroundChildProps>, index) => {
+    (child: ReactElement<AnimatedBackgroundChildProps>) => {
       const id = child.props['data-id']
 
       const interactionProps = enableHover
@@ -74,7 +74,7 @@ export function AnimatedBackground({
       return cloneElement(
         child,
         {
-          key: index,
+          key: id,
           className: cn('relative inline-flex', child.props.className),
           'data-checked': activeId === id ? 'true' : 'false',
           ...interactionProps,
