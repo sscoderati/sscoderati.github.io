@@ -23,7 +23,14 @@ const blog = defineCollection({
 const books = defineCollection({
   name: 'Book',
   pattern: 'books/**/*.{md,mdx}',
-  schema: baseContentSchema,
+  schema: s.object({
+    title: s.string(),
+    author: s.string(),
+    readDate: s.string(),
+    summary: s.string(),
+    slug: s.path().transform((slug) => slug.replace(/^books\//, '')),
+    body: s.mdx(),
+  }),
 })
 
 const wiki = defineCollection({
