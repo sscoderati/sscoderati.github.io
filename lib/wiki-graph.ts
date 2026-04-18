@@ -1,4 +1,5 @@
 import { getWikiPosts, type WikiPost } from '@/lib/wiki-posts'
+import { normalizeWikiSlug } from '@/lib/wiki-slug'
 
 export type WikiGraphNode = {
   id: string
@@ -15,9 +16,6 @@ export type WikiGraph = {
   nodes: WikiGraphNode[]
   links: WikiGraphLink[]
 }
-
-const normalizeWikiSlug = (slug: string) =>
-  slug.trim().replaceAll(' ', '-').toLowerCase()
 
 export const getGraph = (): WikiGraph => {
   const posts = getWikiPosts()

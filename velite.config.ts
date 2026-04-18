@@ -1,4 +1,5 @@
 import { defineCollection, defineConfig, s } from 'velite'
+import { normalizeWikiSlug } from './lib/wiki-slug'
 
 type RemarkNode = {
   type: string
@@ -38,9 +39,6 @@ const NON_TRAVERSABLE_NODES = new Set([
   'yaml',
   'html',
 ])
-
-const normalizeWikiSlug = (slug: string) =>
-  slug.trim().replaceAll(' ', '-').toLowerCase()
 
 const extractWikiLinksFromRaw = (raw: string): string[] => {
   const sanitized = raw
