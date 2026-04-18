@@ -1,0 +1,16 @@
+---
+title: Velite Wiki 파이프라인 노트
+description: 위키 문서 컬렉션과 렌더링 데이터 흐름을 기록한 문서
+tags:
+  - velite
+  - wiki
+aliases:
+  - content-pipeline
+updatedAt: 2026-04-19
+---
+
+`velite`에서 위키 문서를 하나의 컬렉션으로 다루면 slug, 태그, 본문을 일관된 타입으로 가져올 수 있다.
+
+문서 간 연결은 `[[wikilink]]` 형태로 작성하고, 링크 인덱싱 정보는 후속 작업에서 그래프 데이터로 확장한다.
+
+정적 배포 제약사항은 [[nextjs-static-export]] 문서를 참고한다.
