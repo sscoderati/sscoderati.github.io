@@ -1,10 +1,11 @@
 'use client'
 
 import type { WikiGraph, WikiGraphNode } from '@/lib/wiki-graph'
+import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { useTheme } from 'next-themes'
 import type { ForceGraphMethods } from 'react-force-graph-2d'
+
 import {
   type FormEvent,
   useCallback,
@@ -78,8 +79,14 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
   const router = useRouter()
   const { resolvedTheme } = useTheme()
 
+  const [, setThemeReady] = useState(false)
+  useEffect(() => {
+    setThemeReady(true)
+  }, [])
+
   const isDark = resolvedTheme === 'dark'
   const graphRef = useRef<ForceGraphMethods | undefined>(undefined)
+
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [canvasWidth, setCanvasWidth] = useState(0)
@@ -123,8 +130,16 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
       }
 
       const rect = containerRef.current.getBoundingClientRect()
+      const bottomReservePx = 96
+      const maxHeightShareOfViewport = 0.58
+      const fitBelowTop = window.innerHeight - rect.top - bottomReservePx
+      const maxByViewport = Math.round(
+        window.innerHeight * maxHeightShareOfViewport,
+      )
+      const nextHeight = Math.max(360, Math.min(fitBelowTop, maxByViewport))
+
       setCanvasWidth(rect.width)
-      setCanvasHeight(Math.max(360, window.innerHeight - rect.top))
+      setCanvasHeight(nextHeight)
     }
 
     updateCanvasSize()
@@ -503,7 +518,9 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         className="relative w-full border-y border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950"
         style={{
           height:
-            canvasHeight > 0 ? `${canvasHeight}px` : 'calc(100vh - 10rem)',
+            canvasHeight > 0
+              ? `${canvasHeight}px`
+              : 'min(58dvh, calc(100vh - 12rem))',
         }}
       >
         <form
@@ -526,7 +543,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
           </button>
         </form>
 
-        <aside className="absolute top-4 left-4 z-10 max-h-[min(70vh,34rem)] w-64 overflow-auto rounded-2xl border border-zinc-300 bg-white/92 p-3 backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/88">
+        <aside className="absolute right-4 bottom-4 z-10 max-h-[min(50vh,22rem)] w-64 overflow-auto rounded-2xl border border-zinc-300 bg-white/92 p-3 backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/88">
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
               Tag Filter
@@ -617,7 +634,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         )}
 
         {searchMessage && (
-          <div className="absolute right-4 bottom-4 z-10 rounded-lg border border-zinc-300 bg-white/95 px-3 py-2 text-xs text-zinc-700 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/95 dark:text-zinc-200">
+          <div className="absolute bottom-4 left-4 z-20 max-w-[min(92vw,20rem)] rounded-lg border border-zinc-300 bg-white/95 px-3 py-2 text-xs text-zinc-700 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/95 dark:text-zinc-200">
             {searchMessage}
           </div>
         )}
