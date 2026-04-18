@@ -1,6 +1,7 @@
 'use client'
 
 import { AnimatedBackground } from '@/components/ui/animated-background'
+import { formatWikiDate } from '@/lib/wiki-date'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
@@ -15,14 +16,6 @@ export type WikiListItem = {
 type WikiListProps = {
   posts: WikiListItem[]
   tags: string[]
-}
-
-const formatDate = (value: string) => {
-  return new Date(value).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
 }
 
 export function WikiList({ posts, tags }: WikiListProps) {
@@ -41,6 +34,7 @@ export function WikiList({ posts, tags }: WikiListProps) {
       <div className="mb-4 flex flex-wrap gap-2">
         <button
           type="button"
+          aria-pressed={selectedTag === null}
           onClick={() => setSelectedTag(null)}
           className={`rounded-full border px-3 py-1 text-xs transition-colors ${
             selectedTag === null
@@ -54,6 +48,7 @@ export function WikiList({ posts, tags }: WikiListProps) {
           <button
             key={tag}
             type="button"
+            aria-pressed={selectedTag === tag}
             onClick={() => setSelectedTag((prevTag) => (prevTag === tag ? null : tag))}
             className={`rounded-full border px-3 py-1 text-xs transition-colors ${
               selectedTag === tag
@@ -96,7 +91,7 @@ export function WikiList({ posts, tags }: WikiListProps) {
                 </div>
                 <p className="mb-0! flex flex-col gap-1 text-zinc-500 dark:text-zinc-400">
                   {post.description && <span className="text-sm">{post.description}</span>}
-                  <span className="text-xs">{formatDate(post.updatedAt)}</span>
+                  <span className="text-xs">{formatWikiDate(post.updatedAt)}</span>
                 </p>
               </div>
             </Link>

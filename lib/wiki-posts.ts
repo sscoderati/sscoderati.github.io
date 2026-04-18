@@ -7,7 +7,8 @@ export type WikiPost = Wiki & {
   slugAsParams: string
 }
 
-const toSlugAsParams = (slug: string) => slug.replace(/^wiki\//, '')
+const toSlugAsParams = (slug: string) =>
+  slug.startsWith(WIKI_PREFIX) ? slug.slice(WIKI_PREFIX.length) : slug
 
 export const getWikiPosts = () => {
   return wiki

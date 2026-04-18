@@ -1,4 +1,5 @@
 import { MDXContent } from '@/components/mdx-content'
+import { formatWikiDate } from '@/lib/wiki-date'
 import { getWikiPost, getWikiPosts } from '@/lib/wiki-posts'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -7,14 +8,6 @@ type WikiDetailPageProps = {
   params: Promise<{
     slug: string
   }>
-}
-
-const formatDate = (value: string) => {
-  return new Date(value).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
 }
 
 export function generateStaticParams() {
@@ -56,7 +49,7 @@ export default async function WikiDetailPage({ params }: WikiDetailPageProps) {
             </span>
           ))}
           <span className="not-prose text-xs text-zinc-500 dark:text-zinc-400">
-            업데이트: {formatDate(post.updatedAt)}
+            업데이트: {formatWikiDate(post.updatedAt)}
           </span>
         </div>
         <div className="mt-8">
