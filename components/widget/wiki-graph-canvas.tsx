@@ -10,17 +10,35 @@ import {
 } from 'd3-force'
 import type { Simulation, SimulationLinkDatum, SimulationNodeDatum } from 'd3-force'
 import { quadtree } from 'd3-quadtree'
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Tags } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import {
-  type FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+type WikiSearchItem = {
+  id: string
+  label: string
+  slug: string
+  tags: string[]
+}
 
 const LIGHT_TAG_COLORS = [
   '#0d9488',
@@ -76,7 +94,11 @@ type WikiGraphCanvasProps = {
 export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
   const router = useRouter()
   const { resolvedTheme } = useTheme()
-  const isDark = resolvedTheme === 'dark'
+  const [themeMounted, setThemeMounted] = useState(false)
+  useEffect(() => {
+    setThemeMounted(true)
+  }, [])
+  const isDark = themeMounted && resolvedTheme === 'dark'
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -142,8 +164,27 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
   }, [tags])
   const enabledTagSet = useMemo(() => new Set(enabledTags), [enabledTags])
 
-  const [searchKeyword, setSearchKeyword] = useState('')
   const [searchMessage, setSearchMessage] = useState('')
+
+  const wikiSearchItems = useMemo((): WikiSearchItem[] => {
+    return nodes
+      .filter((n) => n.kind === 'wiki')
+      .map((n) => ({
+        id: n.id,
+        label: n.label,
+        slug: n.slug,
+        tags: n.tags,
+      }))
+  }, [nodes])
+
+  const wikiFilter = useCallback((item: WikiSearchItem, query: string) => {
+    const q = query.trim().toLowerCase()
+    if (!q) return true
+    return (
+      item.slug.toLowerCase().includes(q) ||
+      item.label.toLowerCase().includes(q)
+    )
+  }, [])
 
   const tagColorMap = useMemo(() => {
     const palette = isDark ? DARK_TAG_COLORS : LIGHT_TAG_COLORS
@@ -411,7 +452,17 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
     const updateDims = () => {
       const rect = container.getBoundingClientRect()
       const w = rect.width
-      const h = Math.max(360, window.innerHeight - rect.top)
+      const footer = document.querySelector('footer')
+      const footerBox = footer?.getBoundingClientRect()
+      const footerReserve =
+        (footerBox?.height ?? 52) +
+        // layout: footer mt-24 — 캔버스 아래에 남겨 둘 여백(패딩은 페이지에서 최소화)
+        96 +
+        4
+      const h = Math.max(
+        320,
+        window.innerHeight - rect.top - footerReserve,
+      )
       const dpr = window.devicePixelRatio || 1
       canvas.width = Math.round(w * dpr)
       canvas.height = Math.round(h * dpr)
@@ -577,147 +628,170 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
     }
   }, [router])
 
-  // Search: find node and animate zoom toward it
-  const handleSearch = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      const keyword = searchKeyword.trim().toLowerCase()
-      if (!keyword) {
-        setSearchMessage('')
-        return
+  const focusWikiFromPick = useCallback((item: WikiSearchItem | null) => {
+    if (!item) return
+    const sim = simRef.current
+    if (!sim) return
+
+    const target = sim
+      .nodes()
+      .find((n) => n.id === item.id && n.kind === 'wiki')
+    if (!target) {
+      setSearchMessage('노드를 찾지 못했습니다.')
+      return
+    }
+
+    if (!visibleNodeIdsRef.current.has(target.id)) {
+      setEnabledTags((prev) => [...new Set([...prev, ...item.tags])])
+    }
+
+    focusedNodeIdRef.current = target.id
+    setSearchMessage(`"${target.label}" 노드로 이동했습니다.`)
+
+    const targetK = 3.5
+    const targetX = -(target.x ?? 0) * targetK
+    const targetY = -(target.y ?? 0) * targetK
+    const start = { ...transformRef.current }
+    const startTime = performance.now()
+    const duration = 500
+
+    const animate = (now: number) => {
+      const progress = Math.min(1, (now - startTime) / duration)
+      const eased = easeInOut(progress)
+      transformRef.current = {
+        x: start.x + (targetX - start.x) * eased,
+        y: start.y + (targetY - start.y) * eased,
+        k: start.k + (targetK - start.k) * eased,
       }
-
-      const sim = simRef.current
-      if (!sim) return
-
-      const target = sim.nodes().find((n) => {
-        if (n.kind !== 'wiki') return false
-        return (
-          n.slug.toLowerCase().includes(keyword) ||
-          n.label.toLowerCase().includes(keyword)
-        )
-      })
-
-      if (!target) {
-        setSearchMessage('일치하는 wiki 문서를 찾지 못했습니다.')
-        return
-      }
-
-      if (!visibleNodeIdsRef.current.has(target.id)) {
-        setEnabledTags((prev) => [...new Set([...prev, ...target.tags])])
-      }
-
-      focusedNodeIdRef.current = target.id
-      setSearchMessage(`"${target.label}" 노드로 이동했습니다.`)
-
-      // Animated pan+zoom to target node
-      const targetK = 3.5
-      const targetX = -(target.x ?? 0) * targetK
-      const targetY = -(target.y ?? 0) * targetK
-      const start = { ...transformRef.current }
-      const startTime = performance.now()
-      const duration = 500
-
-      const animate = (now: number) => {
-        const progress = Math.min(1, (now - startTime) / duration)
-        const eased = easeInOut(progress)
-        transformRef.current = {
-          x: start.x + (targetX - start.x) * eased,
-          y: start.y + (targetY - start.y) * eased,
-          k: start.k + (targetK - start.k) * eased,
-        }
-        drawRef.current()
-        if (progress < 1) requestAnimationFrame(animate)
-      }
-      requestAnimationFrame(animate)
-    },
-    [searchKeyword],
-  )
+      drawRef.current()
+      if (progress < 1) requestAnimationFrame(animate)
+    }
+    requestAnimationFrame(animate)
+  }, [])
 
   return (
     <div ref={containerRef} className="relative -mx-4">
       <div
         className="relative w-full border-y border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950"
-        style={{ height: canvasHeight > 0 ? `${canvasHeight}px` : 'min(58dvh, calc(100vh - 12rem))' }}
+        style={{
+          height:
+            canvasHeight > 0
+              ? `${canvasHeight}px`
+              : 'min(52dvh, calc(100dvh - 14rem))',
+        }}
       >
         <canvas ref={canvasRef} className="block" />
 
-        {/* Search bar */}
-        <form
-          onSubmit={handleSearch}
-          className="absolute top-4 left-1/2 z-10 flex w-[min(92vw,28rem)] -translate-x-1/2 items-center gap-2 rounded-full border border-zinc-300 bg-white/90 p-2 backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/85"
-        >
-          <input
-            type="search"
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-            placeholder="slug 또는 title 검색"
-            className="w-full bg-transparent px-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-zinc-100"
-            aria-label="Wiki graph 검색"
-          />
-          <button
-            type="submit"
-            className="rounded-full bg-zinc-900 px-3 py-1 text-xs text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-200 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        <div className="absolute top-3 left-1/2 z-10 w-[min(92vw,15.5rem)] -translate-x-1/2">
+          <Combobox
+            items={wikiSearchItems}
+            filter={wikiFilter}
+            itemToStringLabel={(doc) => doc.label}
+            isItemEqualToValue={(a, b) => a.id === b.id}
+            onValueChange={(doc) => focusWikiFromPick(doc)}
+            autoHighlight
           >
-            이동
-          </button>
-        </form>
+            <ComboboxInput
+              aria-label="Wiki graph 문서 검색"
+              placeholder="문서 검색…"
+              showTrigger
+              showClear
+              className="h-7 w-full min-w-0 rounded-full border-zinc-300/90 bg-white/92 text-xs shadow-sm backdrop-blur-md dark:border-zinc-700/90 dark:bg-zinc-900/88 [&_input]:placeholder:text-zinc-400 dark:[&_input]:placeholder:text-zinc-500"
+            />
+            <ComboboxContent className="rounded-xl border-zinc-200/90 dark:border-zinc-800/90">
+              <ComboboxEmpty className="text-xs">
+                일치하는 문서가 없습니다
+              </ComboboxEmpty>
+              <ComboboxList className="max-h-[min(40dvh,12rem)]">
+                {(doc: WikiSearchItem) => (
+                  <ComboboxItem key={doc.id} value={doc}>
+                    <span className="min-w-0 flex-1 truncate">{doc.label}</span>
+                    <span className="max-w-[40%] shrink-0 truncate text-[10px] text-muted-foreground">
+                      {doc.slug}
+                    </span>
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+        </div>
 
-        {/* Tag filter + color legend */}
-        <aside className="absolute right-4 bottom-4 z-10 max-h-[min(50vh,22rem)] w-64 overflow-auto rounded-2xl border border-zinc-300 bg-white/92 p-3 backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/88">
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-              Tag Filter
-            </h2>
-            <div className="flex items-center gap-1 text-[10px]">
-              <button
+        <div className="absolute right-4 bottom-4 z-10">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
                 type="button"
-                onClick={() => setEnabledTags(tags)}
-                className="rounded border border-zinc-300 px-1.5 py-0.5 text-zinc-600 hover:border-zinc-500 dark:border-zinc-700 dark:text-zinc-300"
+                variant="outline"
+                size="icon-sm"
+                className="rounded-full border-zinc-300/90 bg-white/92 shadow-sm backdrop-blur-md dark:border-zinc-700/90 dark:bg-zinc-900/88"
+                aria-label="태그 필터 열기"
               >
-                전체
-              </button>
-              <button
-                type="button"
-                onClick={() => setEnabledTags([])}
-                className="rounded border border-zinc-300 px-1.5 py-0.5 text-zinc-600 hover:border-zinc-500 dark:border-zinc-700 dark:text-zinc-300"
-              >
-                해제
-              </button>
-            </div>
-          </div>
-          <ul className="space-y-1">
-            {tags.map((tag) => {
-              const checked = enabledTagSet.has(tag)
-              const color = tagColorMap.get(tag) ?? '#2563eb'
-              return (
-                <li key={tag}>
-                  <label className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-xs text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={(e) => {
-                        const next = e.target.checked
-                        setEnabledTags((prev) =>
-                          next
-                            ? [...new Set([...prev, tag])]
-                            : prev.filter((t) => t !== tag),
-                        )
-                      }}
-                      className="h-3.5 w-3.5 rounded border-zinc-300 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
-                    />
-                    <span
-                      className="inline-block h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: color }}
-                      aria-hidden
-                    />
-                    <span>#{tag}</span>
-                  </label>
-                </li>
-              )
-            })}
-          </ul>
-        </aside>
+                <Tags className="size-4 text-zinc-600 dark:text-zinc-300" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="flex max-h-[min(85dvh,28rem)] flex-col gap-0 sm:max-w-sm">
+              <DialogHeader className="shrink-0 space-y-3 text-left">
+                <div className="pr-8">
+                  <DialogTitle>태그 필터</DialogTitle>
+                  <DialogDescription>
+                    그래프에 표시할 문서 태그를 선택합니다.
+                  </DialogDescription>
+                </div>
+                <div className="flex flex-wrap gap-1.5 pr-8">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    className="h-7 text-[10px]"
+                    onClick={() => setEnabledTags(tags)}
+                  >
+                    전체
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    className="h-7 text-[10px]"
+                    onClick={() => setEnabledTags([])}
+                  >
+                    해제
+                  </Button>
+                </div>
+              </DialogHeader>
+              <ul className="no-scrollbar mt-1 max-h-[min(50vh,18rem)] flex-1 space-y-0.5 overflow-y-auto overscroll-contain py-1">
+                {tags.map((tag) => {
+                  const checked = enabledTagSet.has(tag)
+                  const color = tagColorMap.get(tag) ?? '#2563eb'
+                  return (
+                    <li key={tag}>
+                      <label className="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5 text-xs text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) => {
+                            const next = e.target.checked
+                            setEnabledTags((prev) =>
+                              next
+                                ? [...new Set([...prev, tag])]
+                                : prev.filter((t) => t !== tag),
+                            )
+                          }}
+                          className="h-3.5 w-3.5 rounded border-zinc-300 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+                        />
+                        <span
+                          className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: color }}
+                          aria-hidden
+                        />
+                        <span>#{tag}</span>
+                      </label>
+                    </li>
+                  )
+                })}
+              </ul>
+            </DialogContent>
+          </Dialog>
+        </div>
 
         {/* Bottom-left controls */}
         <div className="absolute left-4 bottom-4 z-10 flex flex-col items-start gap-2">
