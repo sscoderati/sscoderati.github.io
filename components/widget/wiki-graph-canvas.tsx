@@ -8,7 +8,11 @@ import {
   forceManyBody,
   forceSimulation,
 } from 'd3-force'
-import type { Simulation, SimulationLinkDatum, SimulationNodeDatum } from 'd3-force'
+import type {
+  Simulation,
+  SimulationLinkDatum,
+  SimulationNodeDatum,
+} from 'd3-force'
 import { quadtree } from 'd3-quadtree'
 import {
   Combobox,
@@ -134,9 +138,9 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
     }))
     const linkList: SimLink[] = graph.links.map((l) => ({ ...l }))
 
-    const allTags = [
-      ...new Set(nodeList.flatMap((n) => n.tags)),
-    ].sort((a, b) => a.localeCompare(b, 'ko-KR'))
+    const allTags = [...new Set(nodeList.flatMap((n) => n.tags))].sort((a, b) =>
+      a.localeCompare(b, 'ko-KR'),
+    )
 
     const byId = new Map<string, SimNode>()
     for (const n of nodeList) byId.set(n.id, n)
@@ -374,8 +378,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
       ctx.restore()
 
       // Labels: show on hover, focus, or high zoom
-      const showLabel =
-        isFocused || node.id === hoveredId || transform.k > 2.2
+      const showLabel = isFocused || node.id === hoveredId || transform.k > 2.2
       if (!showLabel) continue
 
       const fontSize = Math.max(11, 14 / transform.k)
@@ -390,7 +393,12 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
 
       const textWidth = ctx.measureText(text).width
       ctx.fillStyle = dark ? 'rgba(9,9,11,0.85)' : 'rgba(255,255,255,0.85)'
-      ctx.fillRect(textX - 2, textY - fontSize * 0.65, textWidth + 4, fontSize * 1.3)
+      ctx.fillRect(
+        textX - 2,
+        textY - fontSize * 0.65,
+        textWidth + 4,
+        fontSize * 1.3,
+      )
       ctx.fillStyle = dark ? '#f4f4f5' : '#18181b'
       ctx.fillText(text, textX, textY)
       ctx.restore()
@@ -423,7 +431,10 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
       )
       .force('charge', forceManyBody<SimNode>().strength(-120).theta(0.9))
       .force('center', forceCenter(0, 0))
-      .force('collide', forceCollide<SimNode>((d) => nodeRadius(d) + 2))
+      .force(
+        'collide',
+        forceCollide<SimNode>((d) => nodeRadius(d) + 2),
+      )
       .velocityDecay(0.22)
 
     simRef.current = sim
@@ -459,10 +470,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         // layout: footer mt-24 — 캔버스 아래에 남겨 둘 여백(패딩은 페이지에서 최소화)
         96 +
         4
-      const h = Math.max(
-        320,
-        window.innerHeight - rect.top - footerReserve,
-      )
+      const h = Math.max(320, window.innerHeight - rect.top - footerReserve)
       const dpr = window.devicePixelRatio || 1
       canvas.width = Math.round(w * dpr)
       canvas.height = Math.round(h * dpr)
@@ -706,7 +714,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
                 {(doc: WikiSearchItem) => (
                   <ComboboxItem key={doc.id} value={doc}>
                     <span className="min-w-0 flex-1 truncate">{doc.label}</span>
-                    <span className="max-w-[40%] shrink-0 truncate text-[10px] text-muted-foreground">
+                    <span className="text-muted-foreground max-w-[40%] shrink-0 truncate text-[10px]">
                       {doc.slug}
                     </span>
                   </ComboboxItem>
@@ -794,7 +802,7 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         </div>
 
         {/* Bottom-left controls */}
-        <div className="absolute left-4 bottom-4 z-10 flex flex-col items-start gap-2">
+        <div className="absolute bottom-4 left-4 z-10 flex flex-col items-start gap-2">
           {searchMessage && (
             <div
               role="status"
