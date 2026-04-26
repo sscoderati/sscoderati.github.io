@@ -50,10 +50,10 @@
   "private": true,
   "scripts": {
     "build": "velite build && next build",
-    "dev": "velite dev & next dev",
+    "dev": "velite dev & next dev -p 3125",
     "export": "pnpm build",
     "lint": "next lint",
-    "start": "next start",
+    "start": "next start -p 3125",
     "typecheck": "tsc --noEmit"
   },
   "version": "0.1.0"

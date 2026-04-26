@@ -22,7 +22,7 @@ pnpm install
 pnpm dev
 ```
 
-브라우저에서 `http://localhost:3000` 접속
+브라우저에서 `http://localhost:3125` 접속
 
 ### 3) 프로덕션 빌드(static export)
 
