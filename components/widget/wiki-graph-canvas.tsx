@@ -67,6 +67,7 @@ const DARK_TAG_COLORS = [
 ]
 
 const SCALE_EXTENT: [number, number] = [0.2, 8]
+const PS_HUB_NODE_PREFIX = '__graph-ps__'
 
 type SimNode = WikiGraphNode &
   SimulationNodeDatum & {
@@ -83,6 +84,7 @@ type Transform = { x: number; y: number; k: number }
 const INITIAL_TRANSFORM: Transform = { x: 0, y: 0, k: 1 }
 
 function nodeRadius(node: SimNode): number {
+  if (node.id.startsWith(PS_HUB_NODE_PREFIX)) return 8
   if (node.kind === 'ghost') return 3.5
   return Math.max(5, 4.5 + Math.sqrt(node.degree) * 1.2)
 }
@@ -228,15 +230,27 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
         visible.add(node.id)
       }
     }
-    // Ghost nodes referenced by visible nodes stay visible
-    for (const link of graph.links) {
-      if (visible.has(link.source)) {
-        const tgt = nodeById.get(link.target)
-        if (tgt?.kind === 'ghost') visible.add(link.target)
-      }
-      if (visible.has(link.target)) {
-        const src = nodeById.get(link.source)
-        if (src?.kind === 'ghost') visible.add(link.source)
+    // Keep ghost hubs connected to visible wiki nodes.
+    // We expand transitively so multi-level hubs like PS -> BOJ -> post
+    // remain visible even when they are not direct neighbors of wiki nodes.
+    let changed = true
+    while (changed) {
+      changed = false
+      for (const link of graph.links) {
+        if (visible.has(link.source)) {
+          const tgt = nodeById.get(link.target)
+          if (tgt?.kind === 'ghost' && !visible.has(link.target)) {
+            visible.add(link.target)
+            changed = true
+          }
+        }
+        if (visible.has(link.target)) {
+          const src = nodeById.get(link.source)
+          if (src?.kind === 'ghost' && !visible.has(link.source)) {
+            visible.add(link.source)
+            changed = true
+          }
+        }
       }
     }
     return visible
@@ -337,7 +351,13 @@ export function WikiGraphCanvas({ graph }: WikiGraphCanvasProps) {
 
       let fillColor: string
       if (node.kind === 'ghost') {
-        fillColor = dark ? '#52525b' : '#a1a1aa'
+        fillColor = node.id.startsWith(PS_HUB_NODE_PREFIX)
+          ? dark
+            ? '#22d3ee'
+            : '#0891b2'
+          : dark
+            ? '#52525b'
+            : '#a1a1aa'
       } else {
         const matchingTag =
           node.tags.find((t) => enabledSet.has(t)) ?? node.tags[0]
