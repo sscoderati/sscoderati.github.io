@@ -1,4 +1,4 @@
-# sscoderati.github.io
+# changgihong.github.io
 
 Astro에서 Next.js(App Router + MDX)로 마이그레이션한 블로그 프로젝트입니다.  
 정적 export(`out/`)를 GitHub Pages로 배포합니다.
